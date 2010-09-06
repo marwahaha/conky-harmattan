@@ -46,27 +46,27 @@ config-stamp:
 	dh_testdir
 
 	chmod +x ./autogen.sh
-	AUTOMAKE=automake-1.11 ./autogen.sh
+	AUTOMAKE=automake ./autogen.sh
 
 	ln -sf /usr/share/misc/config.sub .
 	ln -sf /usr/share/misc/config.guess .
 
 	mkdir build-std build-cli build-all
 
-	cd build-std && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	../configure $(COMMON_CONFIGURE_FLAGS) $(LINUX_CONF_ARGS_STD)
+#DML#		cd build-std && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+#DML#		../configure $(COMMON_CONFIGURE_FLAGS) $(LINUX_CONF_ARGS_STD)
 
-	cd build-cli &&	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-	../configure $(COMMON_CONFIGURE_FLAGS) \
-	--disable-lua --disable-double-buffer --disable-x11 \
-	--disable-xdamage --disable-own-window --disable-xft \
-	--disable-hddtemp --disable-alsa --disable-portmon \
-	--enable-ncurses
+#DML#	cd build-cli &&	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
+#DML#	../configure $(COMMON_CONFIGURE_FLAGS) \
+#DML#	--disable-lua --disable-double-buffer --disable-x11 \
+#DML#	--disable-xdamage --disable-own-window --disable-xft \
+#DML#	--disable-hddtemp --disable-alsa --disable-portmon \
+#DML#	--enable-ncurses
 
 	cd build-all && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	../configure $(COMMON_CONFIGURE_FLAGS) \
-        --enable-imlib2 --enable-rss --enable-weather-xoap \
-	--enable-eve --enable-lua-cairo --enable-lua-imlib2 \
+	--enable-imlib2=no --enable-rss --enable-weather-xoap \
+	--enable-eve --enable-lua=no --enable-lua-cairo=no --enable-lua-imlib2=no \
 	--disable-static --enable-argb \
 	$(LINUX_CONF_ARGS_ALL) $(ENABLE_NVIDIA)
 
@@ -77,8 +77,8 @@ build: build-stamp
 build-stamp: config-stamp
 	dh_testdir
 
-	cd build-std && $(MAKE)
-	cd build-cli && $(MAKE)
+#DML#	cd build-std && $(MAKE)
+#DML#	cd build-cli && $(MAKE)
 	cd build-all && $(MAKE)
 
 	touch $@
@@ -106,9 +106,17 @@ install: build
 	dh_testroot
 	dh_clean -k 
 
-	cd build-std && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-std
-	cd build-cli && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-cli
+#DML#	cd build-std && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-std
+#DML#	cd build-cli && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-cli
 	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-all
+	mkdir -p debian/conky-all/usr/share/icons/hicolor/scalable/apps/
+	cp -p debian/conkylogo64.png debian/conky-all/usr/share/icons/hicolor/scalable/apps/conky.png
+	mkdir -p debian/conky-all/usr/share/icons/hicolor/48x48/apps/
+	cp -p debian/conkylogo48.png debian/conky-all/usr/share/icons/hicolor/48x48/apps/conky.png
+	mkdir -p debian/conky-all/usr/share/applications/hildon/
+	cp -p debian/conky.desktop debian/conky-all/usr/share/applications/hildon/conky.desktop
+	mkdir -p debian/conky-all/usr/bin/
+	cp -p debian/conky.sh debian/conky-all/usr/bin/
 
 	# Clean up cruft left upstream
 	rm -rf debian/conky-std/usr/lib debian/conky-cli/usr/lib \
@@ -122,16 +130,17 @@ binary-arch: build install
 	dh_testroot
 	dh_installchangelogs ChangeLog
 	dh_installdocs
-	dh_installmenu -a
+	dh_installmenu
 	dh_installman -a doc/conky.1
-	dh_install -a
-	dh_link -a
-	dh_strip -a
+	dh_install
+	dh_link
+	dh_strip
 	dh_compress
 	dh_fixperms
-	dh_installdeb -a
-	dh_shlibdeps -a
+	dh_installdeb
+	dh_shlibdeps
 	dh_gencontrol
+	maemo-optify
 	dh_md5sums
 	dh_builddeb
 

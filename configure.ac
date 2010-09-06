@@ -782,7 +782,7 @@ AC_CHECK_HEADERS([sys/mount.h], [], [],
       #endif
       ])
 # check if we have inotify support
-AC_CHECK_HEADERS([sys/inotify.h])
+# DML #AC_CHECK_HEADERS([sys/inotify.h])
 
 dnl
 dnl Some defines

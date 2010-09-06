@@ -1,12 +1,12 @@
 Source: conky
-Section: contrib/utils
+Section: user/desktop
 Priority: optional
-Maintainer: Cesare Tirabassi <norsetto@ubuntu.com>
-Build-Depends: debhelper (>= 5.0.0), libtool, automake1.11,
+Maintainer: Darren Long darren.long@mac.com
+XSBC-Original-Maintainer: Cesare Tirabassi <norsetto@ubuntu.com>
+Build-Depends: debhelper (>= 5.0.0), libtool, automake,
 	       pkg-config (>= 0.19), libx11-dev, libxft-dev,
 	       libxdamage-dev, libxext-dev, libglib2.0-dev,	       
-	       libxml2-dev, libcurl4-gnutls-dev, liblua5.1-0-dev,	       
-	       libimlib2-dev, libtolua++5.1-dev, libcairo2-dev,
+	       libxml2-dev,
 	       libiw-dev[!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libasound2-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libkvm-dev [kfreebsd-i386 kfreebsd-amd64],
@@ -14,14 +14,13 @@ Build-Depends: debhelper (>= 5.0.0), libtool, automake1.11,
 	       nvidia-settings [i386 amd64], libncurses5-dev
 Homepage: http://conky.sourceforge.net/
 Standards-Version: 3.8.4
-Vcs-Browser: https://code.launchpad.net/~norsetto/+junk/conky
-Vcs-Bzr: lp:~norsetto/+junk/conky
+
 
 Package: conky
 Architecture: all
 Priority: extra
 Depends: conky-all, ${misc:Depends}
-Description: highly configurable system monitor (transitional package)
+Description: Highly configurable system monitor (transitional package)
  Conky is a system monitor that can display just about anything,
  either on your root desktop or in its own window.
  Conky has many built-in objects, as well as the ability to execute
@@ -31,43 +30,43 @@ Description: highly configurable system monitor (transitional package)
  This is a dummy package to ease transition to the new packaging scheme.
  It may be safely removed after upgrade/installation.
 
-Package: conky-std
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Suggests: apcupsd, moc, mpd
-Conflicts: conky-cli, conky-all
-Replaces: conky-cli, conky-all
-Description: highly configurable system monitor (default version)
- Conky is a system monitor that can display just about anything,
- either on your root desktop or in its own window.
- Conky has many built-in objects, as well as the ability to execute
- external programs or scripts (either external or through built-in
- lua support). 
- .
- This package should be a good compromise for most users that do not
- need special features.
- It includes the following support:
- .
- X11, XDamage, XDBE, Xft, MPD, MOC, math, hddtemp, portmon,
- wireless, ALSA mixer, apcupsd, I/O stats, argb and Lua.
+#DML# Package: conky-std
+#DML# Architecture: any
+#DML# Depends: ${shlibs:Depends}, ${misc:Depends}
+#DML# Suggests: apcupsd, moc, mpd
+#DML# Conflicts: conky-cli, conky-all
+#DML# Replaces: conky-cli, conky-all
+#DML# Description: highly configurable system monitor (default version)
+#DML#  Conky is a system monitor that can display just about anything,
+#DML#  either on your root desktop or in its own window.
+#DML#  Conky has many built-in objects, as well as the ability to execute
+#DML#  external programs or scripts (either external or through built-in
+#DML#  lua support). 
+#DML#  .
+#DML#  This package should be a good compromise for most users that do not
+#DML#  need special features.
+#DML#  It includes the following support:
+#DML#  .
+#DML#  X11, XDamage, XDBE, Xft, MPD, MOC, math, hddtemp, portmon,
+#DML#  wireless, ALSA mixer, apcupsd, I/O stats, argb and Lua.
 
-Package: conky-cli
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Suggests: apcupsd, moc, mpd
-Conflicts: conky-std, conky-all
-Replaces: conky-std, conky-all
-Description: highly configurable system monitor (basic version)
- Conky is a system monitor that can display just about anything,
- either on your root desktop or in its own window.
- Conky has many built-in objects, as well as the ability to execute
- external programs or scripts (either external or through built-in
- lua support). 
- .
- This is a basic package that can be useful in servers or piped with dzen2.
- It includes the following support:
- .
- MPD, MOC, math, apcupsd, ncurses and I/O stats.
+#DML# Package: conky-cli
+#DML# Architecture: any
+#DML# Depends: ${shlibs:Depends}, ${misc:Depends}
+#DML# Suggests: apcupsd, moc, mpd
+#DML# Conflicts: conky-std, conky-all
+#DML# Replaces: conky-std, conky-all
+#DML# Description: highly configurable system monitor (basic version)
+#DML#  Conky is a system monitor that can display just about anything,
+#DML#  either on your root desktop or in its own window.
+#DML#  Conky has many built-in objects, as well as the ability to execute
+#DML#  external programs or scripts (either external or through built-in
+#DML#  lua support). 
+#DML#  .
+#DML#  This is a basic package that can be useful in servers or piped with dzen2.
+#DML#  It includes the following support:
+#DML#  .
+#DML#  MPD, MOC, math, apcupsd, ncurses and I/O stats.
 
 Package: conky-all
 Architecture: any
@@ -75,17 +74,144 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: apcupsd, moc, mpd
 Conflicts: conky-std, conky-cli
 Replaces: conky, conky-std, conky-cli
-Description: highly configurable system monitor (all features enabled)
+Description: Highly configurable system monitor (most features enabled)
  Conky is a system monitor that can display just about anything,
  either on your root desktop or in its own window.
  Conky has many built-in objects, as well as the ability to execute
  external programs or scripts (either external or through built-in
  lua support). 
  .
- This is a full conky with most compile options enabled:
+ This is a full(ish) conky with most compile options enabled:
  .
  X11, XDamage, XDBE, Xft, MPD, MOC, OpenMP, math, hddtemp, portmon, RSS,
- Weather, wireless, IBM, nvidia, eve-online, Imlib2, ALSA mixer,
- apcupsd, I/O stats, argb, Lua and the cairo and imlib2 lua bindings.
+ Weather, wireless, IBM, eve-online, ALSA mixer,
+ apcupsd, I/O stats, argb.
  .
- Use this if you are not sure what conky flavour you need.
+ Maemo5: This port for maemo5 is intended to be run as a standalone
+ app and not as a desktop widget.  The default config has been reworked
+ for suitability for the N900 platform. The launcher checks for the file
+ /home/user/MyDocs/conky.conf and will run with that if it is present.
+Xsbc-Bugtracker: https://bugs.maemo.org/enter_bug.cgi?product=conky
+XB-Maemo-Display-Name: Conky
+XB-Maemo-Icon-26:
+ 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
+ rkJggg==
