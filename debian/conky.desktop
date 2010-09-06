@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Conky
+Icon=conky
+Exec=/usr/bin/conky.sh
+Type=Application
