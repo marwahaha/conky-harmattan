@@ -3540,7 +3540,7 @@ static void main_loop(void)
 		if(update_interval_bat != NOBATTERY && update_interval_bat != update_interval_old) {
 			char buf[max_user_text];
 
-			get_battery_short_status(buf, max_user_text, "BAT0");
+			get_battery_short_status(buf, max_user_text, "bq27200-0"); //why is this even hardcoded here? oh well.
 			if(buf[0] == 'D') {
 				update_interval = update_interval_bat;
 			} else {
