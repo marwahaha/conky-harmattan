@@ -1559,7 +1559,7 @@ POWER_SUPPLY_TYPE=Battery
 POWER_SUPPLY_PRESENT=1													<< this is always 1, it means the battery is inserted
 POWER_SUPPLY_VOLTAGE_NOW=4039										<< this keeps updating during charging
 POWER_SUPPLY_CURRENT_NOW=1960                   << this goes negative when charging!
-POWER_SUPPLY_CAPACITY=98												<< supposed to be the %, but it stops updating when charging until it hits 100%
+POWER_SUPPLY_CAPACITY=98												<< supposed to be the %, I THOUGHT it stops updating when charging until it hits 100%, but maybe not?
 POWER_SUPPLY_TEMP=39														<< only temperature sensor in n900 :(
 */
 
@@ -1714,10 +1714,8 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		/* charging */
  		if (present_rate <= 0) {//if charging
  				/* e.g. charging 75% */
- 				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "charging %i%%",
- 					(int) (((float) remaining_capacity / 100) ));
- 				snprintf(last_battery_time_str[idx],
-					sizeof(last_battery_time_str[idx]) - 1, "unknown");
+ 				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "charging %i%%", remaining_capacity);
+ 				snprintf(last_battery_time_str[idx], sizeof(last_battery_time_str[idx]) - 1, "unknown");
  				/* e.g. 2h 37m */
 // 				format_seconds(last_battery_time_str[idx], sizeof(last_battery_time_str[idx])-1,
 // 					      (long) (((float)(acpi_last_full[idx] - remaining_capacity) / present_rate) * 3600));
@@ -1738,8 +1736,7 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		else if (present_rate > 0) {
  			  
  				/* e.g. discharging 35% */
- 				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "discharging %i%%",
- 					(int) (((float) remaining_capacity / 100)   ));
+ 				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "discharging %i%%", remaining_capacity);
 
  				snprintf(last_battery_time_str[idx],
 					sizeof(last_battery_time_str[idx]) - 1, "unknown");
@@ -2004,7 +2001,7 @@ int get_battery_perct(const char *bat)
 	}
 	last_battery_perct_time[idx] = current_update_time;
 
-	/* Only check for SYSFS or ACPI */
+	/* Only check for SYSFS */
 
 	if (sysfs_bat_fp[idx] == NULL && acpi_bat_fp[idx] == NULL && apm_bat_fp[idx] == NULL) {
 		sysfs_bat_fp[idx] = open_file(sysfs_path, &rep);
@@ -2038,46 +2035,47 @@ int get_battery_perct(const char *bat)
 		fclose(sysfs_bat_fp[idx]);
 		sysfs_bat_fp[idx] = NULL;
 
-	} else if (acpi_bat_fp[idx] != NULL) {
-		/* ACPI */
-		/* read last full capacity if it's zero */
-		if (acpi_design_capacity[idx] == 0) {
-			static int rep2;
-			char path[128];
-			FILE *fp;
-
-			snprintf(path, 127, ACPI_BATTERY_BASE_PATH "/%s/info", bat);
-			fp = open_file(path, &rep2);
-			if (fp != NULL) {
-				while (!feof(fp)) {
-					char b[256];
-
-					if (fgets(b, 256, fp) == NULL) {
-						break;
-					}
-					if (sscanf(b, "last full capacity: %d",
-								&acpi_design_capacity[idx]) != 0) {
-						break;
-					}
-				}
-				fclose(fp);
-			}
-		}
-
-		fseek(acpi_bat_fp[idx], 0, SEEK_SET);
-
-		while (!feof(acpi_bat_fp[idx])) {
-			char buf[256];
-
-			if (fgets(buf, 256, acpi_bat_fp[idx]) == NULL) {
-				break;
-			}
-
-			if (buf[0] == 'r') {
-				sscanf(buf, "remaining capacity: %d", &remaining_capacity);
-			}
-		}
-	}
+	} 
+//	else if (acpi_bat_fp[idx] != NULL) {
+//		/* ACPI */
+//		/* read last full capacity if it's zero */
+//		if (acpi_design_capacity[idx] == 0) {
+//			static int rep2;
+//			char path[128];
+//			FILE *fp;
+//
+//			snprintf(path, 127, ACPI_BATTERY_BASE_PATH "/%s/info", bat);
+//			fp = open_file(path, &rep2);
+//			if (fp != NULL) {
+//				while (!feof(fp)) {
+//					char b[256];
+//
+//					if (fgets(b, 256, fp) == NULL) {
+//						break;
+//					}
+//					if (sscanf(b, "last full capacity: %d",
+//								&acpi_design_capacity[idx]) != 0) {
+//						break;
+//					}
+//				}
+//				fclose(fp);
+//			}
+//		}
+//
+//		fseek(acpi_bat_fp[idx], 0, SEEK_SET);
+//
+//		while (!feof(acpi_bat_fp[idx])) {
+//			char buf[256];
+//
+//			if (fgets(buf, 256, acpi_bat_fp[idx]) == NULL) {
+//				break;
+//			}
+//
+//			if (buf[0] == 'r') {
+//				sscanf(buf, "remaining capacity: %d", &remaining_capacity);
+//			}
+//		}
+//	}
 	if (remaining_capacity < 0) {
 		return 0;
 	}

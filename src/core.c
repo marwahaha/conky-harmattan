@@ -245,7 +245,7 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if (arg) {
 			sscanf(arg, "%63s", bat);
 		} else {
-			strcpy(bat, "BAT0");
+			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
 	END OBJ(battery_short, 0)
@@ -254,7 +254,7 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if (arg) {
 			sscanf(arg, "%63s", bat);
 		} else {
-			strcpy(bat, "BAT0");
+			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
 	END OBJ(battery_time, 0)
@@ -263,7 +263,7 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if (arg) {
 			sscanf(arg, "%63s", bat);
 		} else {
-			strcpy(bat, "BAT0");
+			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
 	END OBJ(battery_percent, 0)
@@ -272,7 +272,7 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if (arg) {
 			sscanf(arg, "%63s", bat);
 		} else {
-			strcpy(bat, "BAT0");
+			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
 	END OBJ(battery_bar, 0)
@@ -282,7 +282,7 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if (arg && strlen(arg)>0) {
 			sscanf(arg, "%63s", bat);
 		} else {
-			strcpy(bat, "BAT0");
+			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
 #endif /* !__OpenBSD__ */
