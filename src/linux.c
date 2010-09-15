@@ -1578,6 +1578,12 @@ static char batteries[MAX_BATTERY_COUNT][32];
 static int acpi_last_full[MAX_BATTERY_COUNT];
 static int acpi_design_capacity[MAX_BATTERY_COUNT];
 
+//eg 4100
+static int last_battery_volts[MAX_BATTERY_COUNT];
+
+//eg 35
+static int last_battery_temp[MAX_BATTERY_COUNT];
+
 /* e.g. "charging 75%" */
 static char last_battery_str[MAX_BATTERY_COUNT][64];
 /* e.g. "3h 15m" */
@@ -1647,6 +1653,8 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 
 	memset(last_battery_str[idx], 0, sizeof(last_battery_str[idx]));
 	memset(last_battery_time_str[idx], 0, sizeof(last_battery_time_str[idx]));
+	//memset(last_battery_volts[idx], 0, sizeof(last_battery_volts[idx]));
+	//memset(last_battery_temp[idx], 0, sizeof(last_battery_temp[idx]));
 
  	/* first try SYSFS if that fails try ACPI */
 
@@ -1700,6 +1708,9 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 
  		fclose(sysfs_bat_fp[idx]);
  		sysfs_bat_fp[idx] = NULL;
+ 		
+ 		last_battery_volts[idx] = voltage;
+ 		last_battery_temp[idx] = temp;
 
  		/* Hellf[i]re notes that remaining capacity can exceed acpi_last_full */
  		//lance notes, we don't care
@@ -1950,6 +1961,12 @@ void set_return_value(char *buffer, unsigned int n, int item, int idx)
 			break;
 		case BATTERY_TIME:
 			snprintf(buffer, n, "%s", last_battery_time_str[idx]);
+			break;
+		case BATTERY_VOLTS:
+			snprintf(buffer, n, "%i", last_battery_volts[idx]); // voltage
+			break;
+		case BATTERY_TEMP:
+			snprintf(buffer, n, "%i", last_battery_temp[idx]); // temperature
 			break;
 		default:
 			break;

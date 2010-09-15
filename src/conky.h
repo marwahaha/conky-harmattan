@@ -201,7 +201,9 @@ char **get_templates(void);
  * needed by conky.c, linux.c and freebsd.c */
 enum {
 	BATTERY_STATUS,
-	BATTERY_TIME
+	BATTERY_TIME,
+	BATTERY_VOLTS,
+	BATTERY_TEMP
 };
 
 /* if_up strictness selector

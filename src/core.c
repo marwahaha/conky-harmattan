@@ -285,6 +285,22 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
+	END OBJ(battery_volts, 0)
+		char bat[64];
+		if (arg) {
+			sscanf(arg, "%63s", bat);
+		} else {
+			strcpy(bat, "bq27200-0");
+		}
+		obj->data.s = strndup(bat, text_buffer_size);
+	END OBJ(battery_temp, 0)
+		char bat[64];
+		if (arg) {
+			sscanf(arg, "%63s", bat);
+		} else {
+			strcpy(bat, "bq27200-0");
+		}
+		obj->data.s = strndup(bat, text_buffer_size);
 #endif /* !__OpenBSD__ */
 
 #if defined(__linux__)
@@ -1650,6 +1666,12 @@ void free_text_objects(struct text_object *root, int internal)
 				free(data.s);
 				break;
 			case OBJ_battery_time:
+				free(data.s);
+				break;
+			case OBJ_battery_volts:
+				free(data.s);
+				break;
+			case OBJ_battery_temp:
 				free(data.s);
 				break;
 #endif /* !__OpenBSD__ */

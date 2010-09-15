@@ -44,6 +44,8 @@ enum text_object_type {
 	OBJ_acpitemp,
 	OBJ_battery,
 	OBJ_battery_time,
+	OBJ_battery_temp,
+	OBJ_battery_volts,
 	OBJ_battery_percent,
 	OBJ_battery_bar,
 	OBJ_battery_short,

@@ -879,6 +879,12 @@ void generate_text_internal(char *p, int p_max_size,
 			OBJ(battery_time) {
 				get_battery_stuff(p, p_max_size, obj->data.s, BATTERY_TIME);
 			}
+			OBJ(battery_volts) {
+				get_battery_stuff(p, p_max_size, obj->data.s, BATTERY_VOLTS);
+			}
+			OBJ(battery_temp) {
+				get_battery_stuff(p, p_max_size, obj->data.s, BATTERY_TEMP);
+			}
 			OBJ(battery_percent) {
 				percent_print(p, p_max_size, get_battery_perct(obj->data.s));
 			}
