@@ -49,6 +49,8 @@ enum text_object_type {
 	OBJ_battery_percent,
 	OBJ_battery_bar,
 	OBJ_battery_short,
+	OBJ_cell_radio_dbm,
+	OBJ_cell_radio_percent,
 #endif /* !__OpenBSD__ */
 	OBJ_buffers,
 	OBJ_cached,

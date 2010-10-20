@@ -1,4 +1,4 @@
-/* -*- mode: c; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- 
+/* -*- mode: c; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*-
  * vim: ts=4 sw=4 noet ai cindent syntax=c
  */
 
@@ -64,6 +64,7 @@ double get_acpi_temperature(int fd);
 void get_acpi_ac_adapter(char *p_client_buffer, size_t client_buffer_size, const char *adapter);
 void get_acpi_fan(char *, size_t);
 void get_battery_stuff(char *buf, unsigned int n, const char *bat, int item);
+void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item);
 int get_battery_perct(const char *bat);
 int get_battery_perct_bar(const char *bat);
 void get_battery_short_status(char *buf, unsigned int n, const char *bat);

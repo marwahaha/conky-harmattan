@@ -1,0 +1,38 @@
+apt-get install maemo-optify
+also need to satisfy liblua5.1-0 by installing liblua5.1-0-dev
+x86:
+The following extra packages will be installed:
+  liblua5.1-0 libreadline5-dev
+Recommended packages:
+  libtool
+The following packages will be REMOVED:
+  libreadline4-dev maemo-core-debug maemo-core-dev maemo-sdk-debug
+  maemo-sdk-dev
+The following NEW packages will be installed:
+  liblua5.1-0 liblua5.1-0-dev libreadline5-dev
+armel:
+The following extra packages will be installed:
+  libreadline5 libreadline5-dev readline-common
+Recommended packages:
+  libtool
+The following packages will be REMOVED:
+  libreadline4-dev maemo-core-dev maemo-sdk-dev
+The following NEW packages will be installed:
+  liblua5.1-0-dev libreadline5 libreadline5-dev readline-common
+0 upgraded, 4 newly installed, 3 to remove and 8 not upgraded.
+
+autoreconf --force --install
+./configure (--enable-imlib2 ... ??)
+make install
+make dist 
+tar xfz conky-1.8.0.tar.gz
+cd conky-1.8.0
+dh_make -e lance.colton@gmail.com -f ../conky-1.8.0.tar.gz -c GPL
+extract and copy to new debian folder from old one:
+control, rules, conky.conf, conky-all.postinst conkylogo48.png, conkylogo64.png, conky.desktop (might not show extension), conky.sh, optify
+
+remove nvidia-settings from dependancies in control, if x86
+
+copy to conky/conky/doc folder: conky.1
+
+dpkg-buildpackage -b -rfakeroot -klance.colton@gmail.com

@@ -84,6 +84,8 @@
 #include <iwlib.h>
 #endif
 
+#include <dbus/dbus.h>
+
 struct sysfs {
 	int fd;
 	int arg;
@@ -1581,6 +1583,12 @@ static int acpi_design_capacity[MAX_BATTERY_COUNT];
 //eg 4100
 static int last_battery_volts[MAX_BATTERY_COUNT];
 
+//eg 78
+static unsigned char last_cell_radio_dbm;
+
+//eg 100
+static unsigned char last_cell_radio_percent;
+
 //eg 35
 static int last_battery_temp[MAX_BATTERY_COUNT];
 
@@ -1626,6 +1634,134 @@ int get_battery_idx(const char *bat)
 	}
 
 	return idx;
+}
+
+//void set_return_value(char *buffer, unsigned int n, int item, int idx);
+
+static int dbus_queue = 0;
+
+void set_dbus_retval(char *buffer, unsigned int n, int item);
+
+DBusConnection *connection;
+DBusError error;
+DBusMessage *message;
+DBusMessageIter iter;
+DBusBusType type;
+int message_type;
+DBusMessage *reply;
+void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
+{
+	char method[128];
+	char path[128];
+	char dest[128];
+	if (dbus_queue > 0)
+	{
+		set_dbus_retval(buffer, intMax_length, item);
+		//snprintf(buffer,intMax_length,"%i",last_cell_radio_dbm);
+		return;
+	}
+	dbus_queue++;//prevent a queue from forming on these requests...
+//fetch data from dbus, store in here as last_cell_radio_dbm
+//return into buffer
+
+	type = DBUS_BUS_SYSTEM;
+	message_type = DBUS_MESSAGE_TYPE_METHOD_CALL;
+//	print_reply = TRUE;
+//	print_reply_literal = FALSE;
+	int reply_timeout_ms = 5000;
+	dbus_error_init (&error);
+	connection = dbus_bus_get (type, &error);
+	if (connection == NULL)
+    {
+		fprintf (stderr, "Failed to open connection to %s message bus: %s\n",
+               (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+               error.message);
+      dbus_error_free (&error);
+      exit (1);
+    }
+	switch(item){
+	case DBUS_CELL_DBM:
+		snprintf(method,127,"get_signal_strength");
+		snprintf(path,127,"/com/nokia/phone/net");
+		snprintf(dest,127,"com.nokia.phone.net");
+		message = dbus_message_new_method_call (dest,path,"Phone.Net",method);
+		dbus_message_set_auto_start (message, TRUE);
+		break;
+	case DBUS_CELL_PERCENT:
+		snprintf(method,127,"get_signal_strength");
+		snprintf(path,127,"/com/nokia/phone/net");
+		snprintf(dest,127,"com.nokia.phone.net");
+		message = dbus_message_new_method_call (dest,path,"Phone.Net",method);
+		dbus_message_set_auto_start (message, TRUE);
+		break;
+	default:
+		fprintf (stderr, "invalid item type in get_dbus_stuff");
+		break;
+	}
+	if (message == NULL)
+	{
+	  fprintf (stderr, "Couldn't allocate D-Bus message\n");
+	  exit (1);
+	}
+	if (!dbus_message_set_destination (message, dest))
+	{
+	  fprintf (stderr, "Not enough memory\n");
+	  exit (1);
+	}
+	dbus_message_iter_init_append (message, &iter);
+	dbus_error_init (&error);
+	reply = dbus_connection_send_with_reply_and_block (connection, message, reply_timeout_ms, &error);
+	if (dbus_error_is_set (&error))
+	{
+	  fprintf (stderr, "Error %s: %s\n",error.name,error.message);
+	  //exit (1);//if we set timeout to 30s or something i guess it's okay to exit on "no reply" cuz something is fu*ked;
+	}
+	if (reply)
+	{
+		DBusMessageIter iter;
+		dbus_message_iter_init (reply, &iter);
+		//int type = dbus_message_iter_get_arg_type(&iter);
+		int current_fieldnumber = 0;
+		while (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_INVALID)
+		{
+			//fprintf (stderr,"dbus-monitor too dumb to decipher arg type '%c'\n", type);
+			current_fieldnumber++;
+			if (current_fieldnumber == 1)
+			{
+				unsigned char val;
+				dbus_message_iter_get_basic(&iter, &val);
+				last_cell_radio_percent = val;
+			}
+			if (current_fieldnumber == 2)
+			{
+				unsigned char val;
+				dbus_message_iter_get_basic(&iter, &val);
+				last_cell_radio_dbm = val;
+			}
+			dbus_message_iter_next (&iter);
+		}
+
+		dbus_message_unref (reply);
+	}
+	set_dbus_retval(buffer, intMax_length, item);
+	dbus_message_unref (message);
+	dbus_connection_unref (connection);
+	dbus_queue = 0;//reset to zero now that complete
+}
+
+void set_dbus_retval(char *buffer, unsigned int intMax_length, int item)
+{
+	switch (item) {
+		case DBUS_CELL_DBM:
+			snprintf(buffer, intMax_length, "%d", last_cell_radio_dbm);
+			break;
+		case DBUS_CELL_PERCENT:
+			snprintf(buffer, intMax_length, "%d", last_cell_radio_percent);
+			break;
+		default:
+			fprintf (stderr, "invalid item type in set_dbus_retval");
+			break;
+	}
 }
 
 void set_return_value(char *buffer, unsigned int n, int item, int idx);
@@ -1708,7 +1844,7 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 
  		fclose(sysfs_bat_fp[idx]);
  		sysfs_bat_fp[idx] = NULL;
- 		
+
  		last_battery_volts[idx] = voltage;
  		last_battery_temp[idx] = temp;
 
@@ -1745,7 +1881,7 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 // 		}
  		/* discharging */
  		else if (present_rate > 0) {
- 			  
+
  				/* e.g. discharging 35% */
  				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "discharging %i%%", remaining_capacity);
 
@@ -1753,7 +1889,7 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 					sizeof(last_battery_time_str[idx]) - 1, "unknown");
 					/* e.g. 1h 12m */
 // 				format_seconds(last_battery_time_str[idx], sizeof(last_battery_time_str[idx])-1,
-// 					      (long) (((float) remaining_capacity / present_rate) * 3600)); 		
+// 					      (long) (((float) remaining_capacity / present_rate) * 3600));
 // 			 else {
 // 				snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1,
 // 					"discharging %d%%",
@@ -1764,10 +1900,10 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		}
  		/* charged */
  		/* thanks to Lukas Zapletal <lzap@seznam.cz> */
- 		
+
  		 if (remaining_capacity == 100)
  				strcpy(last_battery_str[idx], "charged");
- 					
+
 //		else if (strncmp(charging_state, "Charged", 64) == 0 || strncmp(charging_state, "Full", 64) == 0) {
 // 				/* Below happens with the second battery on my X40,
 // 				 * when the second one is empty and the first one
@@ -2037,7 +2173,7 @@ int get_battery_perct(const char *bat)
 				break;
 			if (strncmp(buf, "POWER_SUPPLY_CAPACITY=", 22) == 0) {
 				sscanf(buf, "POWER_SUPPLY_CAPACITY=%d", &remaining_capacity);
-				
+
 //			if (strncmp(buf, "POWER_SUPPLY_CHARGE_NOW=", 24) == 0) {
 //				sscanf(buf, "POWER_SUPPLY_CHARGE_NOW=%d", &remaining_capacity);
 //			} else if (strncmp(buf, "POWER_SUPPLY_CHARGE_FULL=",25) == 0) {
@@ -2052,7 +2188,7 @@ int get_battery_perct(const char *bat)
 		fclose(sysfs_bat_fp[idx]);
 		sysfs_bat_fp[idx] = NULL;
 
-	} 
+	}
 //	else if (acpi_bat_fp[idx] != NULL) {
 //		/* ACPI */
 //		/* read last full capacity if it's zero */
@@ -2097,7 +2233,7 @@ int get_battery_perct(const char *bat)
 		return 0;
 	}
 	/* compute the battery percentage */
-	last_battery_perct[idx] = 
+	last_battery_perct[idx] =
 		remaining_capacity;
 		//(int) (((float) remaining_capacity / acpi_design_capacity[idx]) * 100);
 	//if (last_battery_perct[idx] > 100) last_battery_perct[idx] = 100;

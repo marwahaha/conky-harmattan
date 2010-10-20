@@ -49,6 +49,7 @@ AC_CONFIG_FILES(
   src/Makefile
   src/build.h
   lua/Makefile
+  src/dbus/Makefile
   )
 
 uname=`uname`

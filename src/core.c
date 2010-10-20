@@ -80,6 +80,7 @@
 #include <string.h>
 #include <ctype.h>
 
+
 /* strip a leading /dev/ if any, following symlinks first
  *
  * BEWARE: this function returns a pointer to static content
@@ -160,12 +161,12 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 		if(arg) {
 #ifdef __linux__
 			if(strpbrk(arg, "/.") != NULL) {
-				/* 
+				/*
 				 * a bit of paranoia. screen out funky paths
 				 * i hope no device will have a '.' in its name
 				 */
 				NORM_ERR("acpiacadapter: arg must not contain '/' or '.'");
-			} else 
+			} else
 				obj->data.opaque = strdup(arg);
 #else
 			NORM_ERR("acpiacadapter: arg is only used on linux");
@@ -301,6 +302,8 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
+	END OBJ(cell_radio_dbm, 0)
+	END OBJ(cell_radio_percent, 0)
 #endif /* !__OpenBSD__ */
 
 #if defined(__linux__)

@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 5.0.0), libtool, automake,
 	       libasound2-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libkvm-dev [kfreebsd-i386 kfreebsd-amd64],
 	       libdevstat-dev [kfreebsd-i386 kfreebsd-amd64],
-	       nvidia-settings [i386 amd64], libncurses5-dev
+	       libncurses5-dev, liblua5.1-0-dev, lib-dbus-1-dev
 Homepage: http://conky.sourceforge.net/
 Standards-Version: 3.8.4
 
@@ -70,7 +70,7 @@ Description: Highly configurable system monitor (transitional package)
 
 Package: conky-all
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0
 Suggests: apcupsd, moc, mpd
 Conflicts: conky-std, conky-cli
 Replaces: conky, conky-std, conky-cli

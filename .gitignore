@@ -34,6 +34,13 @@ src/conky
 src/stamp-h1
 src/.deps/
 src/build.h
+.cproject
+.project
+.settings*/
+*.Po
+*.o
+*.ex
+*.EX
 src/config.h
 src/defconfig.h
 src/*.o

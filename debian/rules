@@ -2,7 +2,7 @@
 # -*- makefile -*-
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -12,7 +12,7 @@ DEB_HOST_ARCH_OS    ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_ARCH_CPU   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 
 CFLAGS = -Wall -g
-LDFLAGS = -Wl,--as-needed
+LDFLAGS = -Wl,--as-needed -ldbus-1
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -44,14 +44,14 @@ configure: config-stamp
 
 config-stamp:
 	dh_testdir
-
-	chmod +x ./autogen.sh
+#DML#	chmod +x ./autogen.sh
 	AUTOMAKE=automake ./autogen.sh
 
-	ln -sf /usr/share/misc/config.sub .
-	ln -sf /usr/share/misc/config.guess .
+# copy these instead
+#	ln -sf /usr/share/misc/config.sub .
+#	ln -sf /usr/share/misc/config.guess .
 
-	mkdir build-std build-cli build-all
+	mkdir build-all
 
 #DML#		cd build-std && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 #DML#		../configure $(COMMON_CONFIGURE_FLAGS) $(LINUX_CONF_ARGS_STD)
@@ -65,7 +65,7 @@ config-stamp:
 
 	cd build-all && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	../configure $(COMMON_CONFIGURE_FLAGS) \
-	--enable-imlib2=no --enable-rss --enable-weather-xoap \
+	 --enable-rss --enable-weather-xoap \
 	--enable-eve --enable-lua=no --enable-lua-cairo=no --enable-lua-imlib2=no \
 	--disable-static --enable-argb \
 	$(LINUX_CONF_ARGS_ALL) $(ENABLE_NVIDIA)

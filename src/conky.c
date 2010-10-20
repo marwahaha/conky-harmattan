@@ -894,6 +894,12 @@ void generate_text_internal(char *p, int p_max_size,
 			OBJ(battery_short) {
 				get_battery_short_status(p, p_max_size, obj->data.s);
 			}
+			OBJ(cell_radio_dbm) {
+				get_dbus_stuff(p, p_max_size, DBUS_CELL_DBM);
+			}
+			OBJ(cell_radio_percent) {
+				get_dbus_stuff(p, p_max_size, DBUS_CELL_PERCENT);
+			}
 #endif /* __OpenBSD__ */
 
 			OBJ(buffers) {
@@ -6029,7 +6035,7 @@ static void signal_handler(int sig)
 {
 	/* signal handler is light as a feather, as it should be.
 	 * we will poll g_signal_pending with each loop of conky
-	 * and do any signal processing there, NOT here (except 
+	 * and do any signal processing there, NOT here (except
 	 * SIGALRM because this is caused when conky is hanging) */
 	if(sig == SIGALRM) {
 		alarm_handler();

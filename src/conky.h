@@ -197,13 +197,15 @@ extern struct conftree *currentconffile;
 #define MAX_TEMPLATES 10
 char **get_templates(void);
 
-/* get_battery_stuff() item selector
+/* get_xxxxx_stuff() item selector
  * needed by conky.c, linux.c and freebsd.c */
 enum {
 	BATTERY_STATUS,
 	BATTERY_TIME,
 	BATTERY_VOLTS,
-	BATTERY_TEMP
+	BATTERY_TEMP,
+	DBUS_CELL_DBM,
+	DBUS_CELL_PERCENT
 };
 
 /* if_up strictness selector
