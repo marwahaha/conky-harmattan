@@ -109,7 +109,7 @@ void cimlib_deinit(void)
 {
 	cimlib_cleanup();
 	cache_size_set = 0;
-	imlib_context_disconnect_display();
+//	imlib_context_disconnect_display();
 	imlib_context_pop();
 	imlib_context_free(context);
 }

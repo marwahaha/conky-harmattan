@@ -6,74 +6,22 @@ XSBC-Original-Maintainer: Cesare Tirabassi <norsetto@ubuntu.com>
 Build-Depends: debhelper (>= 5.0.0), libtool, automake,
 	       pkg-config (>= 0.19), libx11-dev, libxft-dev,
 	       libxdamage-dev, libxext-dev, libglib2.0-dev,	       
-	       libxml2-dev,
+	       libxml2-dev, libimlib2-dev,
 	       libiw-dev[!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libasound2-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libkvm-dev [kfreebsd-i386 kfreebsd-amd64],
 	       libdevstat-dev [kfreebsd-i386 kfreebsd-amd64],
-	       libncurses5-dev, liblua5.1-0-dev, lib-dbus-1-dev
+	       libncurses5-dev, liblua5.1-0-dev, libdbus-1-dev
 Homepage: http://conky.sourceforge.net/
 Standards-Version: 3.8.4
 
-
-Package: conky
-Architecture: all
-Priority: extra
-Depends: conky-all, ${misc:Depends}
-Description: Highly configurable system monitor (transitional package)
- Conky is a system monitor that can display just about anything,
- either on your root desktop or in its own window.
- Conky has many built-in objects, as well as the ability to execute
- external programs or scripts (either external or through built-in
- lua support). 
- .
- This is a dummy package to ease transition to the new packaging scheme.
- It may be safely removed after upgrade/installation.
-
-#DML# Package: conky-std
-#DML# Architecture: any
-#DML# Depends: ${shlibs:Depends}, ${misc:Depends}
-#DML# Suggests: apcupsd, moc, mpd
-#DML# Conflicts: conky-cli, conky-all
-#DML# Replaces: conky-cli, conky-all
-#DML# Description: highly configurable system monitor (default version)
-#DML#  Conky is a system monitor that can display just about anything,
-#DML#  either on your root desktop or in its own window.
-#DML#  Conky has many built-in objects, as well as the ability to execute
-#DML#  external programs or scripts (either external or through built-in
-#DML#  lua support). 
-#DML#  .
-#DML#  This package should be a good compromise for most users that do not
-#DML#  need special features.
-#DML#  It includes the following support:
-#DML#  .
-#DML#  X11, XDamage, XDBE, Xft, MPD, MOC, math, hddtemp, portmon,
-#DML#  wireless, ALSA mixer, apcupsd, I/O stats, argb and Lua.
-
-#DML# Package: conky-cli
-#DML# Architecture: any
-#DML# Depends: ${shlibs:Depends}, ${misc:Depends}
-#DML# Suggests: apcupsd, moc, mpd
-#DML# Conflicts: conky-std, conky-all
-#DML# Replaces: conky-std, conky-all
-#DML# Description: highly configurable system monitor (basic version)
-#DML#  Conky is a system monitor that can display just about anything,
-#DML#  either on your root desktop or in its own window.
-#DML#  Conky has many built-in objects, as well as the ability to execute
-#DML#  external programs or scripts (either external or through built-in
-#DML#  lua support). 
-#DML#  .
-#DML#  This is a basic package that can be useful in servers or piped with dzen2.
-#DML#  It includes the following support:
-#DML#  .
-#DML#  MPD, MOC, math, apcupsd, ncurses and I/O stats.
-
-Package: conky-all
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0
-Suggests: apcupsd, moc, mpd
+Package: conky-n900
+Architecture: armel
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: 
+Suggests: moc, mpd
 Conflicts: conky-std, conky-cli
-Replaces: conky, conky-std, conky-cli
+Replaces: conky, conky-std, conky-cli, conky-all
 Description: Highly configurable system monitor (most features enabled)
  Conky is a system monitor that can display just about anything,
  either on your root desktop or in its own window.

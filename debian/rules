@@ -66,8 +66,8 @@ config-stamp:
 	cd build-all && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	../configure $(COMMON_CONFIGURE_FLAGS) \
 	 --enable-rss --enable-weather-xoap \
-	--enable-eve --enable-lua=no --enable-lua-cairo=no --enable-lua-imlib2=no \
-	--disable-static --enable-argb \
+	--enable-eve --enable-lua=yes --enable-lua-cairo=no --enable-lua-imlib2=no \
+	--disable-static --enable-argb --enable-x11 --enable-imlib2 \
 	$(LINUX_CONF_ARGS_ALL) $(ENABLE_NVIDIA)
 
 	touch $@
@@ -108,20 +108,20 @@ install: build
 
 #DML#	cd build-std && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-std
 #DML#	cd build-cli && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-cli
-	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-all
-	mkdir -p debian/conky-all/usr/share/icons/hicolor/scalable/apps/
-	cp -p debian/conkylogo64.png debian/conky-all/usr/share/icons/hicolor/scalable/apps/conky.png
-	mkdir -p debian/conky-all/usr/share/icons/hicolor/48x48/apps/
-	cp -p debian/conkylogo48.png debian/conky-all/usr/share/icons/hicolor/48x48/apps/conky.png
-	mkdir -p debian/conky-all/usr/share/applications/hildon/
-	cp -p debian/conky.desktop debian/conky-all/usr/share/applications/hildon/conky.desktop
-	mkdir -p debian/conky-all/usr/bin/
-	cp -p debian/conky.sh debian/conky-all/usr/bin/
+	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-n900
+	mkdir -p debian/conky-n900/usr/share/icons/hicolor/scalable/apps/
+	cp -p debian/conkylogo64.png debian/conky-n900/usr/share/icons/hicolor/scalable/apps/conky.png
+	mkdir -p debian/conky-n900/usr/share/icons/hicolor/48x48/apps/
+	cp -p debian/conkylogo48.png debian/conky-n900/usr/share/icons/hicolor/48x48/apps/conky.png
+	mkdir -p debian/conky-n900/usr/share/applications/hildon/
+	cp -p debian/conky.desktop debian/conky-n900/usr/share/applications/hildon/conky.desktop
+	mkdir -p debian/conky-n900/usr/bin/
+	cp -p debian/conky.sh debian/conky-n900/usr/bin/
 
 	# Clean up cruft left upstream
 	rm -rf debian/conky-std/usr/lib debian/conky-cli/usr/lib \
-	       debian/conky-all/usr/lib/conky/*.la \
-	       debian/conky-all/usr/lib/conky/*.so.?
+	       debian/conky-n900/usr/lib/conky/*.la \
+	       debian/conky-n900/usr/lib/conky/*.so.?
 
 binary-indep: build install
 
