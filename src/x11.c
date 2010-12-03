@@ -197,7 +197,7 @@ void set_transparent_background(Window win, int alpha)
 	} else {
 #endif /* USE_ARGB */
 	// pseudo transparency
-	
+
 	if (set_transparent) {
 		Window parent = win;
 		unsigned int i;
@@ -226,7 +226,7 @@ static int get_argb_visual(Visual** visual, int *depth) {
 	XVisualInfo visual_template;
 	XVisualInfo *visual_list;
 	int nxvisuals = 0, i;
-	
+
 	visual_template.screen = screen;
 	visual_list = XGetVisualInfo (display, VisualScreenMask,
 				&visual_template, &nxvisuals);
@@ -277,11 +277,11 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 	if (own_window) {
 		int depth = 0, flags;
 		Visual *visual = NULL;
-		
+
 		if (!find_desktop_window(&window.root, &window.desktop)) {
 			return;
 		}
-		
+
 #ifdef USE_ARGB
 		if (use_argb_visual && get_argb_visual(&visual, &depth)) {
 			have_argb_visual = 1;
@@ -503,13 +503,13 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 			}
 
 			/* Skip pager */
-			if (TEST_HINT(window.hints, HINT_SKIP_PAGER)) {
+			if (TEST_HINT(window.hints, HINT_FULLSCREEN)) {
 				/* fprintf(stderr, PACKAGE_NAME": hint - skip_pager\n");
 				   fflush(stderr); */
 
 				xa = ATOM(_NET_WM_STATE);
 				if (xa != None) {
-					Atom xa_prop = ATOM(_NET_WM_STATE_SKIP_PAGER);
+					Atom xa_prop = ATOM(_NET_WM_STATE_FULLSCREEN);
 
 					XChangeProperty(display, window.window, xa, XA_ATOM, 32,
 							PropModeAppend, (unsigned char *) &xa_prop, 1);

@@ -33,7 +33,7 @@ enum _window_hints {
 	HINT_ABOVE,
 	HINT_STICKY,
 	HINT_SKIP_TASKBAR,
-	HINT_SKIP_PAGER
+	HINT_FULLSCREEN
 };
 
 #define SET_HINT(mask, hint)	(mask |= (1 << hint))

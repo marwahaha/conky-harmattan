@@ -3784,6 +3784,13 @@ static void main_loop(void)
 									window.type == TYPE_DESKTOP) {
 								/* allow conky to hold input focus. */
 								break;
+							} else if(TEST_HINT(window.hints,HINT_FULLSCREEN)) {
+								//detect top right click
+								if (ev.xbutton.x > 750 && ev.xbutton.y < 50)
+								{
+									terminate = 1;
+								}
+								break;
 							} else {
 								/* forward the click to the desktop window */
 								XUngrabPointer(display, ev.xbutton.time);
@@ -5084,8 +5091,8 @@ char load_config_file(const char *f)
 							SET_HINT(window.hints, HINT_STICKY);
 						} else if (strncmp(p_hint, "skip_taskbar", 12) == EQUAL) {
 							SET_HINT(window.hints, HINT_SKIP_TASKBAR);
-						} else if (strncmp(p_hint, "skip_pager", 10) == EQUAL) {
-							SET_HINT(window.hints, HINT_SKIP_PAGER);
+						} else if (strncmp(p_hint, "fullscreen", 10) == EQUAL) {
+							SET_HINT(window.hints, HINT_FULLSCREEN);
 						} else {
 							CONF_ERR;
 						}

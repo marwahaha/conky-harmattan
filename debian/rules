@@ -13,6 +13,8 @@ DEB_HOST_ARCH_CPU   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 
 CFLAGS = -Wall -g
 LDFLAGS = -Wl,--as-needed -ldbus-1
+# CFLAGS += `pkg-config --cflags gtk+-2.0`
+# LDFLAGS += `pkg-config --libs gtk+-2.0`
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -53,20 +55,10 @@ config-stamp:
 
 	mkdir build-all
 
-#DML#		cd build-std && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-#DML#		../configure $(COMMON_CONFIGURE_FLAGS) $(LINUX_CONF_ARGS_STD)
-
-#DML#	cd build-cli &&	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-#DML#	../configure $(COMMON_CONFIGURE_FLAGS) \
-#DML#	--disable-lua --disable-double-buffer --disable-x11 \
-#DML#	--disable-xdamage --disable-own-window --disable-xft \
-#DML#	--disable-hddtemp --disable-alsa --disable-portmon \
-#DML#	--enable-ncurses
-
 	cd build-all && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	../configure $(COMMON_CONFIGURE_FLAGS) \
 	 --enable-rss --enable-weather-xoap \
-	--enable-eve --enable-lua=yes --enable-lua-cairo=no --enable-lua-imlib2=no \
+	--enable-eve --enable-lua=yes --enable-lua-cairo --enable-lua-imlib2 \
 	--disable-static --enable-argb --enable-x11 --enable-imlib2 \
 	$(LINUX_CONF_ARGS_ALL) $(ENABLE_NVIDIA)
 
@@ -77,8 +69,6 @@ build: build-stamp
 build-stamp: config-stamp
 	dh_testdir
 
-#DML#	cd build-std && $(MAKE)
-#DML#	cd build-cli && $(MAKE)
 	cd build-all && $(MAKE)
 
 	touch $@
@@ -106,8 +96,6 @@ install: build
 	dh_testroot
 	dh_clean -k 
 
-#DML#	cd build-std && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-std
-#DML#	cd build-cli && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-cli
 	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-n900
 	mkdir -p debian/conky-n900/usr/share/icons/hicolor/scalable/apps/
 	cp -p debian/conkylogo64.png debian/conky-n900/usr/share/icons/hicolor/scalable/apps/conky.png
