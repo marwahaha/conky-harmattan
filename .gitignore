@@ -42,6 +42,7 @@ src/build.h
 *.ex
 *.EX
 src/config.h
+.externalToolBuilders/org.python.pydev.PyDevBuilder.launch
 src/defconfig.h
 src/*.o
 src/*.gcda
