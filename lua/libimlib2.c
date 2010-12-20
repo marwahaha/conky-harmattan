@@ -16,7 +16,10 @@ TOLUA_API int  tolua_imlib2_open (lua_State* tolua_S);
 #include <Imlib2.h>
 #include <X11/Xlib.h>
 #define _userdata void*
-
+#define TOLUA_DISABLE_tolua_imlib2_imlib_get_next_font_in_fallback_chain00
+#define TOLUA_DISABLE_tolua_imlib2_imlib_insert_font_into_fallback_chain00
+#define TOLUA_DISABLE_tolua_imlib2_imlib_remove_font_from_fallback_chain00
+#define TOLUA_DISABLE_tolua_imlib2_imlib_get_prev_font_in_fallback_chain00
 /* function to release collected object via destructor */
 #ifdef __cplusplus
 
@@ -6717,7 +6720,7 @@ TOLUA_API int tolua_imlib2_open (lua_State* tolua_S)
   tolua_function(tolua_S,"imlib_context_pop",tolua_imlib2_imlib_context_pop00);
   tolua_function(tolua_S,"imlib_context_get",tolua_imlib2_imlib_context_get00);
   tolua_function(tolua_S,"imlib_context_set_display",tolua_imlib2_imlib_context_set_display00);
-  tolua_function(tolua_S,"imlib_context_disconnect_display",tolua_imlib2_imlib_context_disconnect_display00);
+  //tolua_function(tolua_S,"imlib_context_disconnect_display",tolua_imlib2_imlib_context_disconnect_display00);
   tolua_function(tolua_S,"imlib_context_set_visual",tolua_imlib2_imlib_context_set_visual00);
   tolua_function(tolua_S,"imlib_context_set_colormap",tolua_imlib2_imlib_context_set_colormap00);
   tolua_function(tolua_S,"imlib_context_set_drawable",tolua_imlib2_imlib_context_set_drawable00);
@@ -6842,10 +6845,10 @@ TOLUA_API int tolua_imlib2_open (lua_State* tolua_S)
   tolua_function(tolua_S,"imlib_image_tile",tolua_imlib2_imlib_image_tile00);
   tolua_function(tolua_S,"imlib_load_font",tolua_imlib2_imlib_load_font00);
   tolua_function(tolua_S,"imlib_free_font",tolua_imlib2_imlib_free_font00);
-  tolua_function(tolua_S,"imlib_insert_font_into_fallback_chain",tolua_imlib2_imlib_insert_font_into_fallback_chain00);
+/*  tolua_function(tolua_S,"imlib_insert_font_into_fallback_chain",tolua_imlib2_imlib_insert_font_into_fallback_chain00);
   tolua_function(tolua_S,"imlib_remove_font_from_fallback_chain",tolua_imlib2_imlib_remove_font_from_fallback_chain00);
   tolua_function(tolua_S,"imlib_get_prev_font_in_fallback_chain",tolua_imlib2_imlib_get_prev_font_in_fallback_chain00);
-  tolua_function(tolua_S,"imlib_get_next_font_in_fallback_chain",tolua_imlib2_imlib_get_next_font_in_fallback_chain00);
+  tolua_function(tolua_S,"imlib_get_next_font_in_fallback_chain",tolua_imlib2_imlib_get_next_font_in_fallback_chain00);*/
   tolua_function(tolua_S,"imlib_text_draw",tolua_imlib2_imlib_text_draw00);
   tolua_function(tolua_S,"imlib_text_draw_with_return_metrics",tolua_imlib2_imlib_text_draw_with_return_metrics00);
   tolua_function(tolua_S,"imlib_get_text_size",tolua_imlib2_imlib_get_text_size00);

@@ -54,3 +54,5 @@ doc/*.mxml
 patches/
 doc/conky.1
 README
+
+*.bak
