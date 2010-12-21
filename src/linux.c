@@ -1651,6 +1651,27 @@ DBusBusType type;
 int message_type;
 DBusMessage *reply;
 
+void dbus_exit_app_view()
+{
+	//dbus-send --type=signal --session	/com/nokia/hildon_desktop .
+
+	type = DBUS_BUS_SESSION;
+	//message_type = DBUS_MESSAGE_TYPE_SIGNAL;
+	dbus_error_init (&error);
+	connection = dbus_bus_get (type, &error);
+    message = dbus_message_new_signal ("/com/nokia/hildon_desktop", "com.nokia.hildon_desktop", "exit_app_view");
+    // send the message and flush the connection
+    if (!dbus_connection_send(connection, message, NULL)) {
+       fprintf(stderr, "Out Of Memory!\n");
+       exit(1);
+    }
+    dbus_connection_flush(connection);
+
+    // free the message
+    dbus_message_unref(message);
+
+}
+
 void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
 {
 	char method[128];

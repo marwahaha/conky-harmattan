@@ -3798,6 +3798,10 @@ static void main_loop(void)
 								{
 									terminate = 1;
 								}
+								if (ev.xbutton.x <= 50 && ev.xbutton.y <= 50)
+								{	//minimize / goto task switcher
+									dbus_exit_app_view();
+								}
 								break;
 							} else {
 								/* forward the click to the desktop window */
