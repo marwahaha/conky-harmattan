@@ -1,9 +1,19 @@
-conky (1.9.6-1) unstable; urgency=low
+conky (1.9.7-1) unstable; urgency=low
 
   * New maemo release:
-    - i'm too lazy to fill this in for now
-    - did i mention lazy? 
-      + whatever
+    - fixes for power kernel v47 
+      + temperature and voltage are reported differently by this kernel and needed to be adjusted
+      + temperature is now reported to the tenth of the degree and your conf file may need to be adjusted to account for this additional digit
+
+ -- Lance Colton <lance.colton@gmail.com>  Mon, 23 May 2011 16:00:00 -0700
+
+conky (1.9.6-2) unstable; urgency=low
+
+  * New maemo release:
+    - too many changes to list
+    - equivalent to 1.8.2 on master conky branch with lots of n900 fixes 
+      + see http://talk.maemo.org/showthread.php?t=64434
+      + the deb posted there is actually better as it supports lua, autobuilder can't work with that
 
  -- Lance Colton <lance.colton@gmail.com>  Thu, 21 Oct 2010 12:00:00 -0700
  

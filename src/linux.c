@@ -1592,8 +1592,8 @@ static unsigned char last_cell_radio_percent;
 //eg 'full' 'on' 'off'
 static char last_batt_charge_status[16];
 
-//eg 35
-static int last_battery_temp[MAX_BATTERY_COUNT];
+//eg 35.5
+static float last_battery_temp[MAX_BATTERY_COUNT];
 
 /* e.g. "charging 75%" */
 static char last_battery_str[MAX_BATTERY_COUNT][64];
@@ -1927,10 +1927,12 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		}
  		fclose(sysfs_bat_fp[idx]);
  		sysfs_bat_fp[idx] = NULL;
-
- 		last_battery_volts[idx] = voltage;
- 		last_battery_temp[idx] = temp;
-
+		if (voltage > 10000) voltage = voltage / 1000;  //fix for n900 power kernel 47
+		last_battery_volts[idx] = voltage;
+ 		if (temp < 100)
+ 			last_battery_temp[idx] = temp;
+ 		else //fix for n900 power kernel 47
+ 			last_battery_temp[idx] = (float) temp / 10;
  		/* charging */
  		if (present_rate <= 0) {
  				/* e.g. charging 75% */
@@ -1980,7 +1982,7 @@ void set_return_value(char *buffer, unsigned int n, int item, int idx)
 			snprintf(buffer, n, "%i", last_battery_volts[idx]); // voltage
 			break;
 		case BATTERY_TEMP:
-			snprintf(buffer, n, "%i", last_battery_temp[idx]); // temperature
+			snprintf(buffer, n, "%3.1f", last_battery_temp[idx]); // temperature
 			break;
 		default:
 			fprintf (stderr, "invalid item type in set_return_value");

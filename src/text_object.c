@@ -55,7 +55,7 @@ int append_object(struct text_object *root, struct text_object *obj)
 
 	if (end) {
 		if (end->next)
-			CRIT_ERR(NULL, NULL, "huston, we have a lift-off");
+			CRIT_ERR(NULL, NULL, "houston, we have a lift-off");
 		end->next = obj;
 	} else {
 		root->next = obj;
