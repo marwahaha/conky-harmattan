@@ -1,9 +1,23 @@
+conky (1.9.8-1) unstable; urgency=low
+
+  * New maemo6 release:
+    - initial release to support harmattan, don't install on maemo5! (sorry)
+      + double buffering doesn't work, screen will flicker, this is not a conky bug. Nokia didn't include the double buffer extension module for x11, ask them!
+      + temperature is not supported at the moment because bme doesn't report it anywhere, that was done with a 3rd party module on n900
+      + cairo / lua work, imlib2 works, but these things aren't necessarily in the repositories so please google them to find them for now. you won't be able to install without those!
+      + this app may crash when swiping it away, and may ignore the down swipe to close, i have no idea why. 
+      + read/write io stats is a kernel feature that titan put into the power kernel on n900, feel free to bug nokia or replace the kernel with a 3rd party one to fix those from being 0
+      + I spent lots of time fixing compiling issues and major issues in the lua and .conf files so didn't have time to optimize them for the 48 extra pixels of width or get everything perfect YET. Please be patient or contribute :)
+
+ -- Lance Colton <lance.colton@gmail.com>  Tue, 08 Nov 2011 21:00:00 -0700
+
 conky (1.9.7-1) unstable; urgency=low
 
   * New maemo release:
     - fixes for power kernel v47 
       + temperature and voltage are reported differently by this kernel and needed to be adjusted
       + temperature is now reported to the tenth of the degree and your conf file may need to be adjusted to account for this additional digit
+      + enabled cairo / lua scripting
 
  -- Lance Colton <lance.colton@gmail.com>  Mon, 23 May 2011 16:00:00 -0700
 

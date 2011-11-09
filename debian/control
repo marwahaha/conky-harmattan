@@ -1,7 +1,7 @@
 Source: conky
 Section: user/desktop
 Priority: optional
-Maintainer: Darren Long darren.long@mac.com
+Maintainer: Lance Colton Lance.Colton@gmail.com
 XSBC-Original-Maintainer: Cesare Tirabassi <norsetto@ubuntu.com>
 Build-Depends: debhelper (>= 5.0.0), libtool, automake,
 	       pkg-config (>= 0.19), libx11-dev, libxft-dev,
@@ -10,35 +10,40 @@ Build-Depends: debhelper (>= 5.0.0), libtool, automake,
 	       libiw-dev[!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libasound2-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386],
 	       libkvm-dev [kfreebsd-i386 kfreebsd-amd64],
-	       libdevstat-dev [kfreebsd-i386 kfreebsd-amd64],
-	       libncurses5-dev, liblua5.1-0-dev, libdbus-1-dev, libcairo2-dev
+	       libdevstat-dev [kfreebsd-i386 kfreebsd-amd64], libcurl4-openssl-dev,
+	       libncurses5-dev, liblua5.1-0-dev, libdbus-1-dev, libcairo2-dev, tolua++
 Homepage: http://conky.sourceforge.net/
 Standards-Version: 3.8.4
 
-Package: conky-n900
+Package: conky-n950
 Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: 
 Suggests: moc, mpd
 Conflicts: conky-std, conky-cli
-Replaces: conky, conky-std, conky-cli, conky-all
-Description: Highly configurable system monitor (most features enabled)
- Conky is a system monitor that can display just about anything,
- either on your root desktop or in its own window.
+Replaces: conky, conky-std, conky-cli, conky-all, conky-n900
+Description: Highly configurable system monitor
+ Conky is a system monitor that can display just about anything.
  Conky has many built-in objects, as well as the ability to execute
  external programs or scripts (either external or through built-in
- lua support). 
+ lua support). It is designed for the desktop and ported to the maemo
+ platform. 
  .
- This is a full(ish) conky with most compile options enabled:
+ This is a full Conky with most compile options enabled, but since
+ you are running on a phone and this software is not really for phones
+ there are a few problems. Nokia cut some corners in the kernel that makes
+ the diskio stats less detailed and X11 is not able to double buffer.
+ Probably this will get fixed very soon but I cannot guarantee it. 
  .
- X11, XDamage, XDBE, Xft, MPD, MOC, OpenMP, math, hddtemp, portmon, RSS,
- Weather, wireless, IBM, eve-online, ALSA mixer,
- apcupsd, I/O stats, argb.
- .
- Maemo5: This port for maemo5 is intended to be run as a standalone
- app and not as a desktop widget.  The default config has been reworked
- for suitability for the N900 platform. The launcher checks for the file
+ Maemo6: This port for maemo6 is intended to be run as a standalone
+ app. The default config has been reworked for suitability for the N9
+ and N950 phones. The launcher checks for the file 
  /home/user/MyDocs/conky.conf and will run with that if it is present.
+ If you want to play with the config I would suggest that you 
+ copy all the files from /etc/conky to MyDocs and edit them there. 
+ You could also look for some to download and place them there.
+ DO NOT change the ones in the /etc/conky folder as the changes would
+ be lost when this app is updated next time.
 Xsbc-Bugtracker: https://bugs.maemo.org/enter_bug.cgi?product=conky
 XB-Maemo-Display-Name: Conky
 XB-Maemo-Icon-26:

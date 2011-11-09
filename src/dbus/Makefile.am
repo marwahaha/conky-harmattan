@@ -180,12 +180,12 @@ libdbus_convenience_la_LDFLAGS=@R_DYNAMIC_LDFLAG@
 ## note that TESTS has special meaning (stuff to use in make check)
 ## so if adding tests not to be run in make check, don't add them to 
 ## TESTS
-if DBUS_BUILD_TESTS
-TESTS_ENVIRONMENT=DBUS_TEST_DATA=$(top_builddir)/test/data DBUS_TEST_HOMEDIR=$(top_builddir)/dbus
-TESTS=dbus-test
-else
+## if DBUS_BUILD_TESTS
+## TESTS_ENVIRONMENT=DBUS_TEST_DATA=$(top_builddir)/test/data DBUS_TEST_HOMEDIR=$(top_builddir)/dbus
+## TESTS=dbus-test
+## else
 TESTS=
-endif
+## endif
 
 ## we use noinst_PROGRAMS not check_PROGRAMS so that we build 
 ## even when not doing "make check"

@@ -26,6 +26,6 @@
 #
 
 configdir = ${sysconfdir}/conky
-dist_config_DATA = conky.conf conky_no_x11.conf
+dist_config_DATA = bargraph_eng.lua box.lua conky.conf conky.conf.nolua graph.lua LoadAll.lua luatraverse.lua misc.lua n950-kobol.jpg piechart.lua strict.lua testCairo.lua text.lua
 
 # vi:set ts=4 sw=4 noet ai nocindent syntax=automake:

@@ -1583,11 +1583,11 @@ static char batteries[MAX_BATTERY_COUNT][32];
 //eg 4100
 static int last_battery_volts[MAX_BATTERY_COUNT];
 
-//eg 78
-static unsigned char last_cell_radio_dbm;
+//eg -78
+static dbus_int32_t last_cell_radio_dbm;
 
 //eg 100
-static unsigned char last_cell_radio_percent;
+static dbus_int32_t last_cell_radio_percent;
 
 //eg 'full' 'on' 'off'
 static char last_batt_charge_status[16];
@@ -1653,22 +1653,25 @@ DBusMessage *reply;
 
 void dbus_exit_app_view()
 {
+	//not needed in harmattan - swipe down or away and close (although it doesn't seem to be reliable to swipe)
+	
+	
 	//dbus-send --type=signal --session	/com/nokia/hildon_desktop .
 
-	type = DBUS_BUS_SESSION;
-	//message_type = DBUS_MESSAGE_TYPE_SIGNAL;
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
-    message = dbus_message_new_signal ("/com/nokia/hildon_desktop", "com.nokia.hildon_desktop", "exit_app_view");
-    // send the message and flush the connection
-    if (!dbus_connection_send(connection, message, NULL)) {
-       fprintf(stderr, "Out Of Memory!\n");
-       exit(1);
-    }
-    dbus_connection_flush(connection);
-
-    // free the message
-    dbus_message_unref(message);
+//	type = DBUS_BUS_SESSION;
+//	//message_type = DBUS_MESSAGE_TYPE_SIGNAL;
+//	dbus_error_init (&error);
+//	connection = dbus_bus_get (type, &error);
+//    message = dbus_message_new_signal ("/com/nokia/hildon_desktop", "com.nokia.hildon_desktop", "exit_app_view");
+//    // send the message and flush the connection
+//    if (!dbus_connection_send(connection, message, NULL)) {
+//       fprintf(stderr, "Out Of Memory!\n");
+//       exit(1);
+//    }
+//    dbus_connection_flush(connection);
+//
+//    // free the message
+//    dbus_message_unref(message);
 
 }
 
@@ -1678,6 +1681,7 @@ void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
 	char path[128];
 	char dest[128];
 	char *args = "";
+	char *args2 = "";
 	if (dbus_queue > 10)
 	{
 		fprintf (stderr, "too much dbus queuing\n");
@@ -1705,19 +1709,39 @@ void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
       exit (1);
     }
 	switch(item){
-	case DBUS_CELL_DBM:
-		snprintf(method,127,"get_signal_strength");
-		snprintf(path,127,"/com/nokia/phone/net");
-		snprintf(dest,127,"com.nokia.phone.net");
-		message = dbus_message_new_method_call (dest,path,"Phone.Net",method);
+	case DBUS_CELL_DBM:		
+		snprintf(method,127,"Get");
+		args = "com.nokia.csd.CSNet.SignalStrength";
+		args2 = "SignalDecibels";
+		snprintf(path,127,"/com/nokia/csd/csnet");
+		snprintf(dest,127,"com.nokia.csd.CSNet"); //service name
+		message = dbus_message_new_method_call (dest,path,"org.freedesktop.DBus.Properties",method);//dest,path,interface,method
 		dbus_message_set_auto_start (message, TRUE);
+		if (!dbus_message_append_args(message,
+			DBUS_TYPE_STRING, &args,
+			DBUS_TYPE_STRING, &args2,
+			DBUS_TYPE_INVALID))
+				fprintf (stderr, "OOM appending args\n");
+		//dbus_message_iter_init_append(message, &iter);
+		//if (!dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, &args))
+		//	fprintf (stderr, "OOM appending args\n");
 		break;
 	case DBUS_CELL_PERCENT:
-		snprintf(method,127,"get_signal_strength");
-		snprintf(path,127,"/com/nokia/phone/net");
-		snprintf(dest,127,"com.nokia.phone.net");
-		message = dbus_message_new_method_call (dest,path,"Phone.Net",method);
+		snprintf(method,127,"Get");
+		args = "com.nokia.csd.CSNet.SignalStrength";
+		args2 = "SignalPercent";
+		snprintf(path,127,"/com/nokia/csd/csnet");
+		snprintf(dest,127,"com.nokia.csd.CSNet"); //service name
+		message = dbus_message_new_method_call (dest,path,"org.freedesktop.DBus.Properties",method);//dest,path,interface,method
 		dbus_message_set_auto_start (message, TRUE);
+		if (!dbus_message_append_args(message,
+			DBUS_TYPE_STRING, &args,
+			DBUS_TYPE_STRING, &args2,
+			DBUS_TYPE_INVALID))
+				fprintf (stderr, "OOM appending args\n");
+		//dbus_message_iter_init_append(message, &iter);
+		//if (!dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, &args))
+		//	fprintf (stderr, "OOM appending args\n");
 		break;
 	case DBUS_HAL_BATTERY_CHRG_STATUS:
 		// 'full' 'on' 'off'
@@ -1780,27 +1804,37 @@ void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
 	if (reply)
 	{
 		DBusMessageIter iter;
+		DBusMessageIter subiter;
 		dbus_message_iter_init (reply, &iter);
-		//int type = dbus_message_iter_get_arg_type(&iter);
 		int current_fieldnumber = 0;
 		while (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_INVALID)
 		{
-			//fprintf (stderr,"dbus-monitor too dumb to decipher arg type '%c'\n", type);
+			
 			current_fieldnumber++;
 			switch(item){
 			case DBUS_CELL_DBM:
-				if (current_fieldnumber == 2)
-				{
-					unsigned char val;
-					dbus_message_iter_get_basic(&iter, &val);
+				if (current_fieldnumber == 1)
+				{//this is a variant
+					if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_VARIANT){
+						fprintf (stderr,"DBUS_CELL_DBM got type '%c'; expected variant!\n", dbus_message_iter_get_arg_type(&iter));
+						break;
+					}
+					dbus_message_iter_recurse (&iter, &subiter);				
+					dbus_int32_t val = 0;
+					if (dbus_message_iter_get_arg_type(&subiter) != DBUS_TYPE_INT32){
+						fprintf (stderr,"DBUS_CELL_DBM subiter got type '%c'; expected INT32!\n", dbus_message_iter_get_arg_type(&subiter));
+						break;
+					}
+					dbus_message_iter_get_basic(&subiter, &val);
 					last_cell_radio_dbm = val;
 				}
 				break;
 			case DBUS_CELL_PERCENT:
 				if (current_fieldnumber == 1)
-				{
-					unsigned char val;
-					dbus_message_iter_get_basic(&iter, &val);
+				{//this is a variant
+					dbus_message_iter_recurse (&iter, &subiter);
+					dbus_int32_t val = 0;
+					dbus_message_iter_get_basic(&subiter, &val);
 					last_cell_radio_percent = val;
 				}
 				break;

@@ -57,7 +57,7 @@ config-stamp:
 
 	cd build-all && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
 	../configure $(COMMON_CONFIGURE_FLAGS) \
-	 --enable-rss --enable-weather-xoap \
+	 --enable-rss --enable-weather-xoap LUA51_LIBS='-llua5.1 -lm' \
 	--enable-eve --enable-lua=yes --enable-lua-cairo --enable-lua-imlib2 \
 	--disable-static --enable-argb --enable-x11 --enable-imlib2 \
 	$(LINUX_CONF_ARGS_ALL) $(ENABLE_NVIDIA)
@@ -81,7 +81,7 @@ clean:
 
 	rm  -f configure.ac configure config.h.in src/config.h.in \
 	       src/defconfig.h compile install-sh missing ltmain.sh depcomp \
-	       Makefile.in doc/Makefile.in src/Makefile.in \
+	       Makefile.in doc/Makefile.in src/Makefile.in  src/dbus/Makefile.in \
 	       data/Makefile.in lua/Makefile.in \
 	       aclocal.m4 m4/libtool.m4 m4/ltversion.m4 \
 	       m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4
@@ -96,20 +96,20 @@ install: build
 	dh_testroot
 	dh_clean -k 
 
-	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-n900
-	mkdir -p debian/conky-n900/usr/share/icons/hicolor/scalable/apps/
-	cp -p debian/conkylogo64.png debian/conky-n900/usr/share/icons/hicolor/scalable/apps/conky.png
-	mkdir -p debian/conky-n900/usr/share/icons/hicolor/48x48/apps/
-	cp -p debian/conkylogo48.png debian/conky-n900/usr/share/icons/hicolor/48x48/apps/conky.png
-	mkdir -p debian/conky-n900/usr/share/applications/hildon/
-	cp -p debian/conky.desktop debian/conky-n900/usr/share/applications/hildon/conky.desktop
-	mkdir -p debian/conky-n900/usr/bin/
-	cp -p debian/conky.sh debian/conky-n900/usr/bin/
+	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-n950
+	mkdir -p debian/conky-n950/usr/share/icons/hicolor/scalable/apps/
+	cp -p debian/conkylogo64.png debian/conky-n950/usr/share/icons/hicolor/scalable/apps/conky.png
+	mkdir -p debian/conky-n950/usr/share/icons/hicolor/48x48/apps/
+	cp -p debian/conkylogo48.png debian/conky-n950/usr/share/icons/hicolor/48x48/apps/conky.png
+	mkdir -p debian/conky-n950/usr/share/applications/
+	cp -p debian/conky.desktop debian/conky-n950/usr/share/applications/conky.desktop
+	mkdir -p debian/conky-n950/usr/bin/
+	cp -p debian/conky.sh debian/conky-n950/usr/bin/
 
 	# Clean up cruft left upstream
 	rm -rf debian/conky-std/usr/lib debian/conky-cli/usr/lib \
-	       debian/conky-n900/usr/lib/conky/*.la \
-	       debian/conky-n900/usr/lib/conky/*.so.?
+	       debian/conky-n950/usr/lib/conky/*.la \
+	       debian/conky-n950/usr/lib/conky/*.so.?
 
 binary-indep: build install
 
@@ -128,7 +128,6 @@ binary-arch: build install
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
-	maemo-optify
 	dh_md5sums
 	dh_builddeb
 

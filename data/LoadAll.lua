@@ -1,5 +1,5 @@
 do
-	package.path = "/home/user/MyDocs/lua/?.lua" --loads all lua files from here
+	package.path = "/etc/conky/?.lua" --loads all lua files from here
 	require 'text' --specify each one we really want again like this, text = text.lua
 	require 'graph'
 	require 'bargraph_eng'
