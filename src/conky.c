@@ -3494,8 +3494,20 @@ static void clear_text(int exposures)
 {
 #ifdef HAVE_XDBE
 	if (use_xdbe) {
-		/* The swap action is XdbeBackground, which clears */
+/*
+		 The swap action is XdbeBackground, which clears 
 		return;
+*/
+      	if (display && window.back_buffer) { // make sure these are !null
+		/* there is some extra space for borders and outlines */
+		XFillRectangle(display, window.back_buffer, window.gc_back,
+                        text_start_x - window.border_inner_margin - window.border_outer_margin - window.border_width,
+			text_start_y - window.border_inner_margin - window.border_outer_margin - window.border_width,
+			text_width + window.border_inner_margin * 2 + window.border_outer_margin * 2 + window.border_width * 2,
+			text_height + window.border_inner_margin * 2 + window.border_outer_margin * 2 + window.border_width * 2);
+	}
+            
+            
 	} else
 #endif
 	if (display && window.window) { // make sure these are !null
