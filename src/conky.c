@@ -3633,6 +3633,20 @@ static void main_loop(void)
 						draw_stuff(); /* redraw everything in our newly sized window */
 						XResizeWindow(display, window.window, window.width,
 								window.height); /* resize window */
+						fprintf(stderr, PACKAGE_NAME": resizing window to %d x %d\n",window.width,window.height);
+#ifdef HAVE_XDBE
+						if (use_xdbe) {
+							XFreePixmap(display, window.back_buffer);
+							window.back_buffer = XCreatePixmap(display, window.window,
+															   window.width, window.height, window.depth);
+							if (window.back_buffer != None)
+								window.drawable = window.back_buffer;
+							else {
+								window.drawable = window.window;
+								use_xdbe = 0;
+							}
+						}
+#endif
 						set_transparent_background(window.window, own_window_argb_value);
 #ifdef HAVE_XDBE
 						/* swap buffers */
@@ -3758,7 +3772,21 @@ static void main_loop(void)
 											window.window, &attrs)) {
 										window.width = attrs.width;
 										window.height = attrs.height;
+										fprintf(stderr, PACKAGE_NAME": x11? resized our window to %d x %d\n",window.width,window.height);
 									}
+#ifdef HAVE_XDBE
+									if (use_xdbe) {
+										XFreePixmap(display, window.back_buffer);
+										window.back_buffer = XCreatePixmap(display, window.window,
+																		   window.width, window.height, window.depth);
+										if (window.back_buffer != None)
+											window.drawable = window.back_buffer;
+										else {
+											window.drawable = window.window;
+											use_xdbe = 0;
+										}
+									}
+#endif
 								}
 
 								text_width = window.width - window.border_inner_margin * 2 - window.border_outer_margin * 2 - window.border_width * 2;
@@ -3888,6 +3916,7 @@ static void main_loop(void)
 		} else {
 #endif /* X11 */
 			t = (next_update_time - get_time()) * 1000000;
+			fprintf(stderr, PACKAGE_NAME": trying to sleep %d microseconds\n",t);
 			if(t > 0) usleep((useconds_t)t);
 			update_text();
 			draw_stuff();

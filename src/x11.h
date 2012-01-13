@@ -12,10 +12,6 @@
 #include <X11/Xft/Xft.h>
 #endif
 
-#ifdef HAVE_XDBE
-#include <X11/extensions/Xdbe.h>
-#endif
-
 #define ATOM(a) XInternAtom(display, #a, False)
 
 #ifdef OWN_WINDOW
@@ -49,7 +45,7 @@ struct conky_window {
 	long border_inner_margin, border_outer_margin, border_width;
 
 #ifdef HAVE_XDBE
-	XdbeBackBuffer back_buffer;
+        Pixmap back_buffer;
 #endif
 #ifdef XFT
 	XftDraw *xftdraw;
@@ -65,6 +61,8 @@ struct conky_window {
 	unsigned int type;
 	unsigned long hints;
 #endif
+    int depth;
+	GC gc_back;
 };
 
 #ifdef HAVE_XDBE

@@ -259,6 +259,12 @@ void destroy_window(void)
 	if(window.gc) {
 		XFreeGC(display, window.gc);
 	}
+	if(window.gc_back) {
+		XFreeGC(display, window.gc_back);
+	}
+	if(window.back_buffer != None) {
+		XFreePixmap(display, window.back_buffer);
+	}
 	memset(&window, 0, sizeof(struct conky_window));
 	colour_set = -1;
 }
@@ -352,6 +358,8 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 				window.x = window.y = 0;
 			}
 			/* Parent is root window so WM can take control */
+
+			fprintf(stderr, PACKAGE_NAME": creating window of %d x %d x %d\n",w,h,depth);
 			window.window = XCreateWindow(display, window.root, window.x,
 					window.y, w, h, 0, depth, InputOutput, visual,
 					flags, &attrs);
@@ -504,8 +512,8 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 
 			/* Skip pager */
 			if (TEST_HINT(window.hints, HINT_FULLSCREEN)) {
-				/* fprintf(stderr, PACKAGE_NAME": hint - skip_pager\n");
-				   fflush(stderr); */
+				fprintf(stderr, PACKAGE_NAME": hint - fullscreen\n");
+				fflush(stderr);
 
 				xa = ATOM(_NET_WM_STATE);
 				if (xa != None) {
@@ -526,20 +534,23 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 	} else
 #endif /* OWN_WINDOW */
 	{
-		XWindowAttributes attrs;
-
 		if (!window.window) {
 			window.window = find_desktop_window(&window.root, &window.desktop);
 		}
 		window.visual = DefaultVisual(display, screen);
 		window.colourmap = DefaultColormap(display, screen);
 
+		fprintf(stderr, PACKAGE_NAME": drawing to desktop window\n");
+	}
+
+	{
+		fprintf(stderr, PACKAGE_NAME": getting window attrs\n");
+		XWindowAttributes attrs;
 		if (XGetWindowAttributes(display, window.window, &attrs)) {
 			window.width = attrs.width;
 			window.height = attrs.height;
+			window.depth = attrs.depth;
 		}
-
-		fprintf(stderr, PACKAGE_NAME": drawing to desktop window\n");
 	}
 
 	/* Drawable is same as window. This may be changed by double buffering. */
@@ -547,16 +558,12 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 
 #ifdef HAVE_XDBE
 	if (use_xdbe) {
-		int major, minor;
-
-		if (!XdbeQueryExtension(display, &major, &minor)) {
-			use_xdbe = 0;
-		} else {
-			window.back_buffer = XdbeAllocateBackBufferName(display,
-					window.window, XdbeBackground);
+		{
+			window.back_buffer = XCreatePixmap(display, window.window,
+											   window.width, window.height, window.depth);
 			if (window.back_buffer != None) {
 				window.drawable = window.back_buffer;
-				fprintf(stderr, PACKAGE_NAME": drawing to double buffer\n");
+				fprintf(stderr, PACKAGE_NAME": created %d x %d x %d back buffer\n",window.width, window.height, window.depth);
 			} else {
 				use_xdbe = 0;
 			}
@@ -626,6 +633,8 @@ void create_gc(void)
 	values.graphics_exposures = 0;
 	values.function = GXcopy;
 	window.gc = XCreateGC(display, window.drawable,
+			GCFunction | GCGraphicsExposures, &values);
+	window.gc_back = XCreateGC(display, window.drawable,
 			GCFunction | GCGraphicsExposures, &values);
 }
 
@@ -856,11 +865,16 @@ void set_struts(int sidenum)
 void xdbe_swap_buffers(void)
 {
 	if (use_xdbe) {
-		XdbeSwapInfo swap;
-
-		swap.swap_window = window.window;
-		swap.swap_action = XdbeBackground;
-		XdbeSwapBuffers(display, &swap, 1);
+		//XWindowAttributes dest;//leaks
+		//XGetWindowAttributes(display, window.window, &dest);
+		//unsigned int src_height, src_width, src_depth = 0;
+		//XGetGeometry(display, window.back_buffer, NULL, NULL, NULL,src_width,src_height, NULL, src_depth);
+//		fprintf(stderr, PACKAGE_NAME": copy from %d x %d x %d to %d x %d x %d\n",src_width, src_height, src_depth, dest.width, dest.height, dest.depth);
+		XCopyArea(display, window.drawable, window.window,
+				  window.gc_back, 0, 0, window.width, window.height, 0, 0);
+		/* FIXME should fill w/ window background */
+//		XFillRectangle(display, window.back_buffer, window.gc,
+//					   0, 0, window.width, window.height);
 	}
 }
 #endif /* HAVE_XDBE */
