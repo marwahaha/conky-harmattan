@@ -1,3 +1,16 @@
+conky (2.0.0-1) unstable; urgency=low
+
+  * Supports double buffering without dbe (an extension nokia removed from x11 in harmattan):
+    - double buffers using pixmaps instead of dbe
+      + spent a long time getting that working and fixing everything that broke when changing that
+      + thanks to syrjala on meego.com forum for giving me a patch that got me started working on this
+      + cairo / lua work, imlib2 works, and you need to install those 3 libraries also.
+      + it doesn't actually crash when swiping to the background, it's nokia's idea that you meant to close it based on the physical orientation of the phone
+      + .conf file needs some small fixes and i can't do anything about the i/o stats not working
+      + i will add some more features soon
+
+ -- Lance Colton <lance.colton@gmail.com>  Tue, 08 Nov 2011 21:00:00 -0700
+
 conky (1.9.8-1) unstable; urgency=low
 
   * New maemo6 release:

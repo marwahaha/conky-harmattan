@@ -1,11 +1,11 @@
 # -*- mode: Makefile; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*-
 #
 dnl major, minor and micro version macros.
-m4_define([conky_version_major], [1])
-m4_define([conky_version_minor], [8])
-m4_define([conky_version_micro], [5])
+m4_define([conky_version_major], [2])
+m4_define([conky_version_minor], [0])
+m4_define([conky_version_micro], [0])
 m4_define([conky_version_tag], [pre]) dnl [] for releases
-m4_define([conky_version_revision],[_pre2390])
+m4_define([conky_version_revision],[_pre1274])
 m4_define([conky_version],
     [conky_version_major().conky_version_minor().conky_version_micro()ifelse(
       conky_version_tag(), [pre],
