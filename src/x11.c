@@ -873,11 +873,9 @@ void xdbe_swap_buffers(void)
 		XCopyArea(display, window.drawable, window.window,
 				  window.gc_back, 0, 0, window.width, window.height, 0, 0);
 		/* FIXME should fill w/ window background */
-                XSet
-/*
-		XFillRectangle(display, window.back_buffer, window.gc,
+                XSetForeground(display,window.gc_back,background_colour);
+		XFillRectangle(display, window.back_buffer, window.gc_back,
 					   0, 0, window.width, window.height);
-*/
 	}
 }
 #endif /* HAVE_XDBE */

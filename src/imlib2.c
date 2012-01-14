@@ -61,12 +61,14 @@ static int cimlib_cache_flush_last = 0;
 
 void cimlib_set_cache_size(long size)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_set_cache_size start\n");
 	imlib_set_cache_size(size);
 	cache_size_set = 1;
 }
 
 void cimlib_set_cache_flush_interval(long interval)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_set_cache_flush_interval start\n");
 	if (interval >= 0) {
 		cimlib_cache_flush_interval = interval;
 	} else {
@@ -76,6 +78,7 @@ void cimlib_set_cache_flush_interval(long interval)
 
 void cimlib_cleanup(void)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_cleanup start\n");
 	struct image_list_s *cur = image_list_start, *last = NULL;
 	while (cur) {
 		last = cur;
@@ -90,6 +93,7 @@ Imlib_Context context;
 void cimlib_init(Display *disp, Window drawable, Visual *visual, Colormap
 		colourmap)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_init start\n");
 	image_list_start = image_list_end = NULL;
 	context = imlib_context_new();
 	imlib_context_push(context);
@@ -103,19 +107,43 @@ void cimlib_init(Display *disp, Window drawable, Visual *visual, Colormap
 	imlib_context_set_visual(visual);
 	imlib_context_set_colormap(colourmap);
 	imlib_context_set_drawable(drawable);
+        fprintf(stderr, PACKAGE_NAME": cimlib_init okay\n");
+}
+
+void cimlib_initp(Display *disp, Pixmap drawable, Visual *visual, Colormap
+		colourmap)
+{
+        fprintf(stderr, PACKAGE_NAME": cimlib_initp start\n");
+	image_list_start = image_list_end = NULL;
+	context = imlib_context_new();
+	imlib_context_push(context);
+	if (!cache_size_set) cimlib_set_cache_size(DEFAULT_IMLIB2_CACHE_SIZE);
+	/* set the maximum number of colors to allocate for 8bpp and less to 256 */
+	imlib_set_color_usage(256);
+	/* dither for depths < 24bpp */
+	imlib_context_set_dither(1);
+	/* set the display , visual, colormap and drawable we are using */
+	imlib_context_set_display(disp);
+	imlib_context_set_visual(visual);
+	imlib_context_set_colormap(colourmap);
+	imlib_context_set_drawable(drawable);
+        fprintf(stderr, PACKAGE_NAME": cimlib_initp okay\n");
 }
 
 void cimlib_deinit(void)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_deinit start\n");
 	cimlib_cleanup();
 	cache_size_set = 0;
 //	imlib_context_disconnect_display();
 	imlib_context_pop();
 	imlib_context_free(context);
+        fprintf(stderr, PACKAGE_NAME": cimlib_deinit okay\n");
 }
 
 void cimlib_add_image(const char *args)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_add_image start\n");
 	struct image_list_s *cur = NULL;
 	char *tmp;
 
@@ -166,11 +194,13 @@ void cimlib_add_image(const char *args)
 	} else {
 		image_list_start = image_list_end = cur;
 	}
+        fprintf(stderr, PACKAGE_NAME": cimlib_add_image okay\n");
 }
 
 static void cimlib_draw_image(struct image_list_s *cur, int *clip_x, int
 		*clip_y, int *clip_x2, int *clip_y2)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_draw_image start\n");
 	int w, h;
 	time_t now = time(NULL);
 	static int rep = 0;
@@ -212,26 +242,30 @@ static void cimlib_draw_image(struct image_list_s *cur, int *clip_x, int
 	if (cur->y < *clip_y) *clip_y = cur->y;
 	if (cur->x + cur->w > *clip_x2) *clip_x2 = cur->x + cur->w;
 	if (cur->y + cur->h > *clip_y2) *clip_y2 = cur->y + cur->h;
+        fprintf(stderr, PACKAGE_NAME": cimlib_draw_image okay\n");
 }
 
 static void cimlib_draw_all(int *clip_x, int *clip_y, int *clip_x2, int *clip_y2)
 {
+    fprintf(stderr, PACKAGE_NAME": cimlib_draw_all start\n");
 	struct image_list_s *cur = image_list_start;
 	while (cur) {
 		cimlib_draw_image(cur, clip_x, clip_y, clip_x2, clip_y2);
 		cur = cur->next;
 	}
+        fprintf(stderr, PACKAGE_NAME": cimlib_draw_all okay\n");
 }
 
 void cimlib_render(int x, int y, int width, int height)
 {
+
 	int clip_x = INT_MAX, clip_y = INT_MAX;
 	int clip_x2 = 0, clip_y2 = 0;
 	time_t now;
 
 	if (!image_list_start) return; /* are we actually drawing anything? */
-
-	/* cheque if it's time to flush our cache */
+        fprintf(stderr, PACKAGE_NAME": cimlib_render start\n");
+	/* check if it's time to flush our cache */
 	now = time(NULL);
 	if (cimlib_cache_flush_interval && now - cimlib_cache_flush_interval > cimlib_cache_flush_last) {
 		int size = imlib_get_cache_size();
@@ -240,32 +274,42 @@ void cimlib_render(int x, int y, int width, int height)
 		cimlib_cache_flush_last = now;
 		DBGP("Flushing Imlib2 cache (%li)\n", now);
 	}
-
+        fprintf(stderr, PACKAGE_NAME": render1\n");
 	/* take all the little rectangles to redraw and merge them into
 	 * something sane for rendering */
 	buffer = imlib_create_image(width, height);
+        fprintf(stderr, PACKAGE_NAME": render2\n");
 	/* clear our buffer */
 	imlib_context_set_image(buffer);
+        fprintf(stderr, PACKAGE_NAME": render3\n");
 	imlib_image_clear();
+        fprintf(stderr, PACKAGE_NAME": render4\n");
 	/* we can blend stuff now */
 	imlib_context_set_blend(1);
+        fprintf(stderr, PACKAGE_NAME": render5\n");
 	/* turn alpha channel on */
 	imlib_image_set_has_alpha(1);
+        fprintf(stderr, PACKAGE_NAME": rende6\n");
 
 	cimlib_draw_all(&clip_x, &clip_y, &clip_x2, &clip_y2);
+        fprintf(stderr, PACKAGE_NAME": render7\n");
 
 	/* set the buffer image as our current image */
 	imlib_context_set_image(buffer);
+        fprintf(stderr, PACKAGE_NAME": render8\n");
 
 	/* setup our clip rect */
 	if (clip_x == INT_MAX) clip_x = 0;
 	if (clip_y == INT_MAX) clip_y = 0;
+        fprintf(stderr, PACKAGE_NAME": render9\n");
 
 	/* render the image at 0, 0 */
 	imlib_render_image_part_on_drawable_at_size(clip_x, clip_y, clip_x2 - clip_x,
 			clip_y2 - clip_y, x + clip_x, y + clip_y, clip_x2 - clip_x,
 			clip_y2 - clip_y);
+        fprintf(stderr, PACKAGE_NAME": render10\n");
 	/* don't need that temporary buffer image anymore */
 	imlib_free_image();
+        fprintf(stderr, PACKAGE_NAME": cimlib_render okay\n");
 }
 

@@ -11,7 +11,7 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 DEB_HOST_ARCH_OS    ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_ARCH_CPU   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -mcpu=cortex-a8
 LDFLAGS = -Wl,--as-needed -ldbus-1
 # CFLAGS += `pkg-config --cflags gtk+-2.0`
 # LDFLAGS += `pkg-config --libs gtk+-2.0`
