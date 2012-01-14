@@ -578,7 +578,7 @@ void init_window(int own_window, int w, int h, int set_trans, int back_colour,
 #endif
 #ifdef IMLIB2
 	{
-		cimlib_init(display, window.drawable, window.visual, window.colourmap);
+                cimlib_init(display, window.drawable, window.visual, window.colourmap);
 	}
 #endif /* IMLIB2 */
 	XFlush(display);

@@ -3656,7 +3656,12 @@ static void main_loop(void)
 							else {
 								window.drawable = window.window;
 								use_xdbe = 0;
-							}
+							}                                                        
+#ifdef IMLIB2
+                                                        {
+                                                                cimlib_init(display, window.drawable, window.visual, window.colourmap);
+                                                        }
+#endif /* IMLIB2 */                                                        
 						}
 #endif
 						set_transparent_background(window.window, own_window_argb_value);
@@ -3797,6 +3802,12 @@ static void main_loop(void)
 											window.drawable = window.window;
 											use_xdbe = 0;
 										}
+#ifdef IMLIB2
+                                                                                {
+                                                                                        cimlib_init(display, window.drawable, window.visual, window.colourmap);
+                                                                                }
+#endif /* IMLIB2 */
+                                                                                
 									}
 #endif
 								}
