@@ -128,6 +128,19 @@ struct text_object;
 /* sony support */
 #include "sony.h"
 
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib.h>
+#include <glib.h>
+#include <mce/mode-names.h>
+
+
+DBusConnection* conn;//session bus
+DBusConnection* conn2;//system bus
+DBusMessage* msg;
+DBusMessageIter args;
+DBusError err;
+int ret;
+
 /* A size for temporary, static buffers to use when
  * one doesn't know what to choose. Defaults to 256.  */
 extern unsigned int text_buffer_size;
@@ -318,7 +331,7 @@ void update_user_time(char *tty);
 
 /* defined in conky.c */
 extern double current_update_time, last_update_time, update_interval;
-
+extern int update_heartbeat_min, update_heartbeat_max, update_heartbeat_battery_skip, update_skips_when_sleeping;
 /* defined in conky.c */
 int spaced_print(char *, int, const char *, int, ...)
 	__attribute__((format(printf, 3, 5)));

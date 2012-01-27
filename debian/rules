@@ -12,9 +12,9 @@ DEB_HOST_ARCH_OS    ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_ARCH_CPU   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 
 CFLAGS = -Wall -g -mcpu=cortex-a8
-LDFLAGS = -Wl,--as-needed -ldbus-1
-# CFLAGS += `pkg-config --cflags gtk+-2.0`
-# LDFLAGS += `pkg-config --libs gtk+-2.0`
+LDFLAGS = -Wl,--as-needed 
+CFLAGS += `pkg-config --cflags dbus-1`
+LDFLAGS += `pkg-config --libs dbus-1`
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0

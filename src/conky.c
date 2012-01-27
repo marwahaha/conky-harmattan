@@ -178,6 +178,10 @@ static volatile int g_signal_pending;
 double update_interval;
 double update_interval_old;
 double update_interval_bat;
+int update_heartbeat_battery_skip = 1;
+int update_skips_when_sleeping = 5;
+int update_heartbeat_min = 0;
+int update_heartbeat_max = 0;
 void *global_cpu = NULL;
 unsigned int max_text_width = 0;
 
@@ -3568,18 +3572,64 @@ static void main_loop(void)
 	last_update_time = 0.0;
 	next_update_time = get_time();
 	info.looped = 0;
+        
+
+        // append arguments
+        if (update_heartbeat_min < update_heartbeat_max){
+            msg = dbus_message_new_method_call("net.appcheck.Proximus", // target service 
+                    "/Proximus", // object path
+                    "net.appcheck.Proximus", // interface to call on
+                    "startTimer"); // method name
+            if (NULL == msg) { 
+                fprintf(stderr, "Message Null\n");
+                exit(1);
+            }
+            if (!dbus_message_append_args(msg, DBUS_TYPE_INT32, &update_heartbeat_min, DBUS_TYPE_INT32, &update_heartbeat_max, DBUS_TYPE_INVALID)) { 
+                fprintf(stderr, "Out Of Memory!\n"); 
+                exit(1);
+            }
+            DBusMessage *reply;
+            dbus_error_init (&err);
+            reply = dbus_connection_send_with_reply_and_block (conn, msg, 1500, &err);
+        
+            if (dbus_error_is_set(&err))
+            {
+            fprintf (stderr, "dbus Error %s: %s\n",err.name,err.message);	  
+            }
+        
+
+            if(reply) {
+                //fprintf (stderr, "got dbus reply to startTimer\n");
+                dbus_message_unref (reply);
+            }
+            else{
+                fprintf (stderr, "no reply to startTimer\n");
+                update_heartbeat_min = update_heartbeat_max;
+            }
+            dbus_message_unref (msg);
+        }
+        
+        int WantSkips;
+        int DoneSkips;
+        bool sleeping = false; //i assume it's pretty hard to start this with the screen off... 
+        
 	while (terminate == 0 && (total_run_times == 0 || info.looped < total_run_times)) {
+             //fprintf(stderr, "started main_loop_while\n");
 		if(update_interval_bat != NOBATTERY && update_interval_bat != update_interval_old) {
 			char buf[max_user_text];
 
 			get_battery_short_status(buf, max_user_text, "bq27200-0"); //why is this even hardcoded here? oh well.
 			if(buf[0] == 'D') {
 				update_interval = update_interval_bat;
+                                WantSkips = update_heartbeat_battery_skip;
 			} else {
 				update_interval = update_interval_old;
+                                WantSkips = 0;
 			}
 		}
+                if (sleeping) WantSkips = update_skips_when_sleeping;
 		info.looped++;
+                DoneSkips = 0;
 
 #ifdef SIGNAL_BLOCKING
 		/* block signals.  we will inspect for pending signals later */
@@ -3598,13 +3648,84 @@ static void main_loop(void)
 				fd_set fdsr;
 				struct timeval tv;
 				int s;
-				t = next_update_time - get_time();
+                                if (update_heartbeat_min != update_heartbeat_max) { //wait for signal
+                                    // add a rule for which messages we want to see
+                                    dbus_bus_add_match(conn, 
+                                            "type='signal',interface='net.appcheck.Proximus'", 
+                                            &err); // see signals from the given interface
+                                    dbus_bus_add_match(conn2, 
+                                            "type='signal',interface='com.nokia.mce.signal'", 
+                                            &err); // see signals from the given interface                                    
+                                    dbus_connection_flush(conn);
+                                    dbus_connection_flush(conn2);
+                                    if (dbus_error_is_set(&err)) { 
+                                        fprintf(stderr, "Match Error (%s)\n", err.message);
+                                        exit(1);
+                                    }
+                                
+                                    int exitloop = 0;
+                                    while (exitloop == 0 && info.looped >= 10) { //first 10 frames drawn fast because if using lua + cairo it takes a while to get going
+                                        // non blocking read of the next available message
+                                        dbus_connection_read_write(conn, 0);
+                                        dbus_connection_read_write(conn2, 0);
+                                        msg = dbus_connection_pop_message(conn);
 
-				if (t < 0) {
-					t = 0;
-				} else if (t > update_interval) {
-					t = update_interval;
-				}
+                                        // loop again if we haven't read a message
+                                        if (NULL == msg) {
+                                            msg = dbus_connection_pop_message(conn2);
+                                            if (NULL == msg){
+                                                sleep(1);
+                                                continue;
+                                            }
+                                        }
+                                        // check if the message is a signal from the correct interface and with the correct name
+                                        if (dbus_message_is_signal(msg, "net.appcheck.Proximus", "heartbeat")) {
+                                            if(WantSkips == 0 || DoneSkips >= WantSkips){
+                                                exitloop = 1;
+                                                fprintf(stderr, PACKAGE_NAME": woke by heartbeat\n");
+                                            }
+                                            else {
+                                                fprintf(stderr, PACKAGE_NAME": ignoring this heartbeat\n");
+                                                DoneSkips++;
+                                            }
+                                        }
+                                        else if (dbus_message_is_signal(msg, "com.nokia.mce.signal", "display_status_ind")){
+                                             // read the parameters
+                                                if (!dbus_message_iter_init(msg, &args))
+                                                    fprintf(stderr, "Message has no arguments!\n"); 
+                                                else if (DBUS_TYPE_STRING != dbus_message_iter_get_arg_type(&args)) 
+                                                    fprintf(stderr, "Argument is not string!\n"); 
+                                                else {
+                                                    char* sigvalue;
+                                                    dbus_message_iter_get_basic(&args, &sigvalue);                                                    
+                                                    if(!strcmp(sigvalue, MCE_DISPLAY_ON_STRING)){
+                                                        printf("wakeup because got display_status_ind signal with value %s\n", sigvalue);
+                                                        exitloop = 1;
+                                                        sleeping = false;
+                                                    }
+                                                    else if(!strcmp(sigvalue, MCE_DISPLAY_OFF_STRING)){
+                                                        printf("sleeping because got display_status_ind signal with value %s\n", sigvalue);
+                                                        WantSkips = update_skips_when_sleeping;
+                                                        sleeping = true;
+                                                    }
+                                                }
+                                        }
+                                        else{
+                                            //fprintf(stderr, PACKAGE_NAME": got dbus junk\n");
+                                        }   
+                                        dbus_message_unref(msg);
+                                        }
+                                    t = 0;//force legacy timer to skip -- update now or as soon as x is ready
+                                }
+                                else{ //signal not available, set up for legacy timer
+                                    t = next_update_time - get_time();
+                                    if (t < 0) {
+                                        t = 0;
+                                    }
+                                    else if (t > update_interval) {
+                                        t = update_interval;
+                                    }                                                                        
+                                }
 
 				tv.tv_sec = (long) t;
 				tv.tv_usec = (long) (t * 1000000) % 1000000;
@@ -3795,7 +3916,7 @@ static void main_loop(void)
 									if (use_xdbe) {
 										XFreePixmap(display, window.back_buffer);
 										window.back_buffer = XCreatePixmap(display, window.window,
-																		   window.width, window.height, window.depth);
+                                                                                                                    window.width, window.height, window.depth);
 										if (window.back_buffer != None)
 											window.drawable = window.back_buffer;
 										else {
@@ -3939,7 +4060,7 @@ static void main_loop(void)
 		} else {
 #endif /* X11 */
 			t = (next_update_time - get_time()) * 1000000;
-			fprintf(stderr, PACKAGE_NAME": trying to sleep %d microseconds\n",t);
+			//fprintf(stderr, PACKAGE_NAME": trying to sleep %d microseconds\n",t);
 			if(t > 0) usleep((useconds_t)t);
 			update_text();
 			draw_stuff();
@@ -4058,7 +4179,7 @@ static void main_loop(void)
 		llua_update_info(&info, update_interval);
 #endif /* HAVE_LUA */
 		g_signal_pending = 0;
-	}
+        }//end of while{} (the real loop)
 	clean_up(current_mail_spool, NULL);
 
 #ifdef HAVE_SYS_INOTIFY_H
@@ -4068,7 +4189,7 @@ static void main_loop(void)
 		inotify_fd = inotify_config_wd = 0;
 	}
 #endif /* HAVE_SYS_INOTIFY_H */
-}
+}//end of main_loop()
 
 #ifdef X11
 static void load_config_file_x11(const char *);
@@ -5220,6 +5341,34 @@ char load_config_file(const char *f)
 		}
 #endif /* IMLIB2 */
 #endif /* X11 */
+                CONF("update_heartbeat_min") {
+			if (value) {
+				update_heartbeat_min = strtod(value, 0);
+			} else {
+				CONF_ERR;
+			}
+		}
+                CONF("update_heartbeat_max") {
+			if (value) {
+				update_heartbeat_max = strtod(value, 0);
+			} else {
+				CONF_ERR;
+			}
+		}
+                CONF("update_heartbeat_battery_skip") {
+			if (value) {
+				update_heartbeat_battery_skip = strtod(value, 0);
+			} else {
+				CONF_ERR;
+			}
+		}
+                CONF("update_skips_when_sleeping") {
+			if (value) {
+				update_skips_when_sleeping = strtod(value, 0);
+			} else {
+				CONF_ERR;
+			}
+		}    
 		CONF("update_interval_on_battery") {
 			if (value) {
 				update_interval_bat = strtod(value, 0);
@@ -6080,8 +6229,42 @@ int main(int argc, char **argv)
 	initialisation(argc, argv);
 
 	first_pass = 0; /* don't ever call fork() again */
+        
+        //dbus code from http://www.matthew.ath.cx/misc/dbus
+        dbus_error_init(&err);
+        // connect to the bus
+        conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
+        if (dbus_error_is_set(&err)) { 
+            fprintf(stderr, "Connection Error (%s)\n", err.message); 
+            dbus_error_free(&err); 
+        }
+        conn2 = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
+        if (dbus_error_is_set(&err)) { 
+            fprintf(stderr, "Connection Error (%s)\n", err.message); 
+            dbus_error_free(&err); 
+        }
+        if (NULL == conn || NULL == conn2) { 
+            exit(1); 
+        }
+        // request a name on the bus (we don't use it for now)
+        ret = dbus_bus_request_name(conn, "net.appcheck.Conky", 
+                DBUS_NAME_FLAG_REPLACE_EXISTING 
+                , &err);
+        if (dbus_error_is_set(&err)) { 
+            fprintf(stderr, "Name Error (%s)\n", err.message); 
+            dbus_error_free(&err); 
+        }
+        if (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER != ret) { 
+            //dbus_connection_close(conn);
+            fprintf(stderr, "some other dbus Name Error\n");
+           // exit(1);
+        }
+        
 
 	main_loop();
+        
+        dbus_connection_close(conn);
+        dbus_connection_close(conn2);
 
 #ifdef HAVE_CURL
 	curl_global_cleanup();

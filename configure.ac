@@ -3,7 +3,7 @@
 dnl major, minor and micro version macros.
 m4_define([conky_version_major], [2])
 m4_define([conky_version_minor], [0])
-m4_define([conky_version_micro], [0])
+m4_define([conky_version_micro], [1])
 m4_define([conky_version_tag], [pre]) dnl [] for releases
 m4_define([conky_version_revision],[_pre1274])
 m4_define([conky_version],
@@ -49,7 +49,6 @@ AC_CONFIG_FILES(
   src/Makefile
   src/build.h
   lua/Makefile
-  src/dbus/Makefile
   )
 
 uname=`uname`

@@ -1,3 +1,16 @@
+conky (2.0.1-1) unstable; urgency=low
+
+  * Added some power saving features, needs some testing to confirm this is working properly
+    - Because conky is written in c (not c++) it can't directly access the system heartbeat timer so it uses another process to do this for it
+      + Conky will look for another app I wrote and modified for this purpose, Proximus (>= v1.2.4)
+      + If proximus-daemon is running conky will ask it to set up a heartbeat timer and proximus will send a dbus signal back for each heartbeat
+      + update_heartbeat_min and update_heartbeat_max from the conf file will specify the approximate time between heartbeats
+      + If the phone is discharging, Conky will skip heartbeats according to the value of update_heartbeat_battery_skip in the conf file
+      + So, if update_heartbeat_battery_skip is 3, conky will update once every 4 heartbeats when discharging. default is 1 so set to 0 to disable.
+      + If the screen turns off, update_skips_when_sleeping overrides update_heartbeat_battery_skip. default is 5!
+
+ -- Lance Colton <lance.colton@gmail.com>  Fri, 27 Jan 2011 00:51:00 -0700
+
 conky (2.0.0-1) unstable; urgency=low
 
   * Supports double buffering without dbe (an extension nokia removed from x11 in harmattan):
@@ -9,7 +22,7 @@ conky (2.0.0-1) unstable; urgency=low
       + .conf file needs some small fixes and i can't do anything about the i/o stats not working
       + i will add some more features soon
 
- -- Lance Colton <lance.colton@gmail.com>  Tue, 08 Nov 2011 21:00:00 -0700
+ -- Lance Colton <lance.colton@gmail.com>  Fri, 06 Jan 2012 21:00:00 -0700
 
 conky (1.9.8-1) unstable; urgency=low
 
