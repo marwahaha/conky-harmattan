@@ -302,6 +302,14 @@ struct text_object *construct_text_object(const char *s, const char *arg, long
 			strcpy(bat, "bq27200-0");
 		}
 		obj->data.s = strndup(bat, text_buffer_size);
+	END OBJ(battery_rate, 0)
+		char bat[64];
+		if (arg) {
+			sscanf(arg, "%63s", bat);
+		} else {
+			strcpy(bat, "bq27200-0");
+		}
+		obj->data.s = strndup(bat, text_buffer_size);           
 	END OBJ(cell_radio_dbm, 0)
 	END OBJ(cell_radio_percent, 0)
 #endif /* !__OpenBSD__ */

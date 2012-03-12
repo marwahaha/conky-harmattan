@@ -92,7 +92,7 @@ function conky_draw_text()
 				bold=true,
 				font_name="Nokia Pure",
 				h_align="r",
-				x=800,
+				x=850,
 				y=15,
 				reflection_alpha=0,
 				reflection_length=0,
@@ -115,7 +115,7 @@ function conky_draw_text()
 		},
 		{
 		    text=conky_parse("${battery_temp}").."\194\176",--yes i had to do the degree symbol like that...
-	  		x=794,
+                    x=845,
 		    y=69,
 		    v_align="m",
 		    h_align="r",
@@ -125,10 +125,23 @@ function conky_draw_text()
 				orientation="nn",
     		reflection_alpha=0,
     		reflection_length=0,			
-        }, 
+        },
+		{
+		    text=conky_parse("${battery_rate}mA"),
+                    x=750,
+		    y=69,
+		    v_align="m",
+		    h_align="l",
+		    font_name="Nokia Pure",
+		    font_size=14,
+		   	colour={{0,col0,1},{0.5,colbg,1}},
+				orientation="nn",
+    		reflection_alpha=0,
+    		reflection_length=0,			
+        },
        	{
-		    text=conky_parse("${battery_short} ${battery_volts}mV"),
-	  		x=794,
+		    text=conky_parse("${battery_short}   ${battery_volts}mV"),
+                    x=845,
 		    y=45,
 		    v_align="m",
 		    h_align="r",
@@ -153,7 +166,7 @@ function conky_draw_text()
         {
 		    text=conky_parse('${cpu}').."%",
 		  	x=223,
-		    y=65,
+		    y=67,
 		    v_align="t",
 		    h_align="l",
 		    font_name="Nokia Pure",
@@ -166,7 +179,7 @@ function conky_draw_text()
         {
 		    text=conky_parse('${memperc}').."%",
 		    x=223,
-		    y=91,
+		    y=101,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=18,
@@ -178,7 +191,7 @@ function conky_draw_text()
         {
 		    text=conky_parse('${fs_used /} / ${fs_size /} (${fs_free /})'),
 		    x=5,
-		    y=115,
+		    y=125,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=16,
@@ -190,7 +203,7 @@ function conky_draw_text()
         {
 		    text="/",
 		    x=220,
-		    y=114,
+		    y=124,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=18,
@@ -203,7 +216,7 @@ function conky_draw_text()
         {
 		    text=conky_parse('${fs_used /home} / ${fs_size /home} (${fs_free /home})'),
 		    x=5,
-		    y=135,
+		    y=145,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=16,
@@ -215,7 +228,7 @@ function conky_draw_text()
         {
 		    text="/home",
 		    x=220,
-		    y=134,
+		    y=144,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=18,
@@ -228,7 +241,7 @@ function conky_draw_text()
         {
 		    text=conky_parse('${fs_used /home/user/MyDocs} / ${fs_size /home/user/MyDocs} (${fs_free /home/user/MyDocs})'),
 		    x=5,
-		    y=155,
+		    y=165,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=16,
@@ -241,7 +254,7 @@ function conky_draw_text()
         {
 		    text="MyDocs",
 		    x=220,
-		    y=154,
+		    y=164,
 		    v_align="t",
 		    font_name="Nokia Pure",
 		    font_size=18,
@@ -282,8 +295,8 @@ function conky_draw_text()
 		]]
         {
 		    text=conky_parse('${wireless_essid wlan0}'),
-	  		x=375,
-		    y=201,
+	  		x=427,
+		    y=202,
 		    h_align="c",
 		    v_align="m",
 		    font_name="Nokia Pure",
@@ -296,9 +309,9 @@ function conky_draw_text()
         },
         {
 		    text="GPRS",
-	  		x=430,
+	  		x=427,
 		    y=201,
-		    h_align="l",
+		    h_align="c",
 		    v_align="m",
 		    font_name="Nokia Pure",
 		    font_size=18,
@@ -310,9 +323,9 @@ function conky_draw_text()
         },
         {
 		    text=conky_parse('${wireless_link_qual_perc wlan0}')..'%',
-	  		x=400,
-		    y=228,
-		    h_align="l",
+	  		x=427,
+		    y=226,
+		    h_align="c",
 		    v_align="m",
 		    font_name="Nokia Pure",
 		    font_size=14,

@@ -47,18 +47,22 @@ end
 -- parses the output from top and calls the colour function
 function conky_top_cpu_colour(arg)
 	-- input is the top var number we want to use
-	local str = conky_parse(string.format('${top name %i}${top cpu %i}${top mem %i}', tonumber(arg), tonumber(arg), tonumber(arg)))
-	local cpu = tonumber(string.match(str, '(%d+%.%d+)'))
-	return conky_top_colour(cpu, 0xd3d3d3, 25, 70) .. str
+	local str1 = conky_parse(string.format('${top name %i}', tonumber(arg)))
+	local str2 = conky_parse(string.format('${top cpu %i}', tonumber(arg)))
+	local str3 = conky_parse(string.format('${top mem %i}', tonumber(arg)))
+	local cpu = tonumber(string.match(str2, '(%d+%.%d+)'))
+	return conky_top_colour(cpu, 0xd3d3d3, 25, 70) .. str1 .. '${goto 110}' .. str2 .. '${goto 160}' .. str3
 end
 
 function conky_top_mem_colour(arg)
 	-- input is the top var number we want to use
-	local str = conky_parse(string.format('${top_mem name %i}${top_mem mem_res %i}  ${top_mem mem_vsize %i}', tonumber(arg), tonumber(arg), tonumber(arg)))
-	local mem = tonumber(string.match(str, '%w+%s+(%d+%.%d+)%w%s%s'))
+	local str1 = conky_parse(string.format('${top_mem name %i}',  tonumber(arg)))
+	local str2 = conky_parse(string.format('${top_mem mem_res %i}', tonumber(arg)))
+	local str3 = conky_parse(string.format('${top_mem mem_vsize %i}', tonumber(arg)))
+	local mem = tonumber(string.match(str2, '(%d+%.?%d+)'))
 	-- tweak the last 3 parameters to your liking
 	-- my machine has ~8GiB of ram, so an upper thresh of 15% seemed appropriate
-	return conky_top_colour(mem, 0xd3d3d3, 10, 24) .. str
+	return conky_top_colour(mem, 0xd3d3d3, 64, 128) .. str1 .. '${goto 390}' .. str2 .. '${goto 440}' .. str3
 end
 
 function conky_top_io_colour(arg)

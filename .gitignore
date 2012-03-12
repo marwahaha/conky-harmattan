@@ -22,7 +22,6 @@ lua/.libs/
 lua/*.c
 lua/*.la
 lua/*.lo
-lua/*.o
 m4/libtool.m4
 m4/ltoptions.m4
 m4/ltsugar.m4
@@ -54,5 +53,15 @@ doc/*.mxml
 patches/
 doc/conky.1
 README
-
+build-all/*
 *.bak
+nbproject/*
+debian/conky-n950/*
+build-stamp
+debian/conky-n950.debhelper.log
+debian/conky-n950.postinst.debhelper
+debian/conky-n950.postrm.debhelper
+debian/conky-n950.substvars
+debian/files
+config-stamp
+/src/deleteme-dbus/.deps/

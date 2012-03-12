@@ -237,6 +237,10 @@
 /* Define if you want support for per-task I/O statistics */
 #undef IOSTATS
 
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
 /* Define if you want Lua extras */
 #undef LUA_EXTRAS
 
@@ -288,6 +292,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION

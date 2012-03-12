@@ -35,6 +35,7 @@
 #include "linux.h"
 #include "net_stat.h"
 #include "diskio.h"
+#include "bme.c"
 #include "temphelper.h"
 #include <dirent.h>
 #include <ctype.h>
@@ -1592,6 +1593,9 @@ static dbus_int32_t last_cell_radio_percent;
 //eg 'full' 'on' 'off'
 static char last_batt_charge_status[16];
 
+//eg 100 or -100
+static int last_battery_rate[MAX_BATTERY_COUNT];
+
 //eg 35.5
 static float last_battery_temp[MAX_BATTERY_COUNT];
 
@@ -1770,7 +1774,7 @@ void get_dbus_stuff(char *buffer,unsigned int intMax_length, int item)
 	case DBUS_HAL_BATTERY_VOLTS_CURRENT:
 		// '3600' - '4200'
 		snprintf(method,127,"GetProperty");
-		args = "battery.voltage.current";
+		args = "battery.voltage.current"; //battery.reporting.current gets battery mA, not charge/discharge rate
 		snprintf(path,127,"/org/freedesktop/Hal/devices/bme");
 		snprintf(dest,127,"org.freedesktop.Hal");
 		message = dbus_message_new_method_call (dest,path,"org.freedesktop.Hal.Device",method);
@@ -1916,10 +1920,12 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 	idx = get_battery_idx(bat);
 
 	/* don't update battery too often */
-	if (current_update_time - last_battery_time[idx] < 29.5) {
+/*
+	if (current_update_time - last_battery_time[idx] < 2) {
 		set_return_value(buffer, n, item, idx);
 		return;
 	}
+*/
 
 	last_battery_time[idx] = current_update_time;
 
@@ -1998,7 +2004,13 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		else if (strncmp(buffer, "full", 4) == 0) {//no, it won't always be 100%. stupid dbus.
  			snprintf(last_battery_str[idx], sizeof(last_battery_str[idx])-1, "charged %i%%", remaining_capacity);
  		 }
- 		last_battery_temp[idx] = temp;
+                
+                struct bme_reply bmeInfo = getBattInfoFromBME();
+                NORM_ERR("at linux.c bme 3");
+                last_battery_temp[idx] = ((float)bmeInfo.battery_temperature) - 273.15f;
+                last_battery_rate[idx] = bmeInfo.battery_current;
+ 		//last_battery_temp[idx] = temp;
+                NORM_ERR("at linux.c bme 4");
 	}
 	set_return_value(buffer, n, item, idx);
 }
@@ -2018,6 +2030,9 @@ void set_return_value(char *buffer, unsigned int n, int item, int idx)
 		case BATTERY_TEMP:
 			snprintf(buffer, n, "%3.1f", last_battery_temp[idx]); // temperature
 			break;
+		case BATTERY_RATE:
+			snprintf(buffer, n, "%i", last_battery_rate[idx]); // charge/discharge rate
+			break;                  
 		default:
 			fprintf (stderr, "invalid item type in set_return_value");
 			break;

@@ -889,6 +889,9 @@ void generate_text_internal(char *p, int p_max_size,
 			OBJ(battery_temp) {
 				get_battery_stuff(p, p_max_size, obj->data.s, BATTERY_TEMP);
 			}
+                        OBJ(battery_rate) {
+				get_battery_stuff(p, p_max_size, obj->data.s, BATTERY_RATE);
+			}
 			OBJ(battery_percent) {
 				percent_print(p, p_max_size, get_battery_perct(obj->data.s));
 			}
@@ -3648,6 +3651,7 @@ static void main_loop(void)
 				fd_set fdsr;
 				struct timeval tv;
 				int s;
+                                //should look for /org/freedesktop/Hal/devices/bme com.nokia.bme.signal
                                 if (update_heartbeat_min != update_heartbeat_max) { //wait for signal
                                     // add a rule for which messages we want to see
                                     dbus_bus_add_match(conn, 

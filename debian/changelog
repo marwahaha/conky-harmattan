@@ -1,3 +1,9 @@
+conky (2.0.2-1) unstable; urgency=low
+
+  * got temperature working again
+
+ -- Lance Colton <lance.colton@gmail.com>  Thu, 08 Mar 2012 00:45:00 -0700
+
 conky (2.0.1-1) unstable; urgency=low
 
   * Added some power saving features, needs some testing to confirm this is working properly
@@ -9,7 +15,7 @@ conky (2.0.1-1) unstable; urgency=low
       + So, if update_heartbeat_battery_skip is 3, conky will update once every 4 heartbeats when discharging. default is 1 so set to 0 to disable.
       + If the screen turns off, update_skips_when_sleeping overrides update_heartbeat_battery_skip. default is 5!
 
- -- Lance Colton <lance.colton@gmail.com>  Fri, 27 Jan 2011 00:51:00 -0700
+ -- Lance Colton <lance.colton@gmail.com>  Fri, 27 Jan 2012 00:51:00 -0700
 
 conky (2.0.0-1) unstable; urgency=low
 
