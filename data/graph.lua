@@ -206,37 +206,57 @@ function set_settings()
 			name="to_bytes ${diskio",
 			arg="mmcblk0}",
 			max=2500000,
-			y=187,
-			x=690,
+			y=183,
+			x=349,
 			autoscale=true,
-			width=160,
+			width=250,
 			height=89,
-			nb_values=130,
+			nb_values=125,
 			fg_bd_size=0,
 			bg_colour = {{0,0x667AF6,0},{1,0x000000,0}},
-			fg_bd_colour =  { {0,0xdd0000,1},{0.5,0xdddd00,1},{1,0xFFFF00,1}},
-			fg_colour = { {1,0x111111,0.3},{0.5,0x33cc00,0.6},{0,0x00FF00,0.8}},
+			fg_bd_colour =  { {0,0x111111,0.3},{0.5,0xcc6600,0.6},{1,0xcc6600,0.8}},
+			fg_colour = { {1,0x111111,0.3},{0.5,0xcc6600,0.6},{0,0xcc6600,0.8}},
 			foreground=true,
 			bg_orientation="ne",
 			fg_orientation="ee",
 	    },
 	    {
-			name="battery_rate",
+			name="battery_rate", --displays when discharging
 			arg="",
-			max=350,
-			y=187,
-			x=500,
+			max=500,
+			y=183,
+			x=593,
 			autoscale=true,
-			width=160,
-			height=45,
-			nb_values=130,
+			width=250,
+			height=85,
+			nb_values=125,
 			fg_bd_size=0,
 			bg_colour = {{0,0x667AF6,0},{1,0x000000,0}},
-			fg_bd_colour =  { {0,0xdd0000,1},{0.5,0xdddd00,1},{1,0xFFFF00,1}},
-			fg_colour = { {1,0x111111,0.3},{0.5,0x33cc00,0.6},{0,0x00FF00,0.8}},
+			fg_bd_colour =  { {0,0xFF0000,1},{0.5,0xFF0000,1},{1,0xFF0000,1}},
+			fg_colour = { {1,0xFF0000,0.3},{0.5,0xFF0000,0.6},{0,0xFF0000,0.8}},
 			foreground=true,
 			bg_orientation="ne",
 			fg_orientation="ee",
+			DrawMe="${if_match ${battery_rate} > 0}1${else}0$endif",
+	    },
+	    {
+			name="battery_rate", --displays when charging
+			arg="",
+			max=500,
+			y=183,
+			x=593,
+			autoscale=true,
+			width=250,
+			height=85,
+			nb_values=125,
+			fg_bd_size=0,
+			bg_colour = {{0,0x667AF6,0},{1,0x000000,0}},
+			fg_bd_colour =  { {0,0x00FF00,1},{0.5,0x00FF00,1},{1,0x00FF00,1}},
+			fg_colour = { {1,0x00FF00,0.3},{0.5,0x00FF00,0.6},{0,0x00FF00,0.8}},
+			foreground=true,
+			bg_orientation="ne",
+			fg_orientation="ee",
+			DrawMe="${if_match ${battery_rate} < 0}1${else}0$endif",
 	    },
     }
 end
@@ -282,7 +302,7 @@ function conky_main_graph()
 			--beginning point
 			graph_settings[i].beg = graph_settings[i].nb_values
 			--graph_settings[i].beg = 0
-			for j =1, graph_settings[i].nb_values do
+			for j=1, graph_settings[i].nb_values do
 			    graph_settings[i].values[j]=0
 			end
 		  graph_settings[i].flag_init=true
@@ -316,6 +336,7 @@ function conky_main_graph()
     					value=tonumber(conky_parse('${' .. 
     					    graph_settings[i].name .. " " ..
     					    graph_settings[i].arg ..'}'))
+    					value=math.abs(value)
     			end
 					graph_settings[i].values[nb_values]=value
 				end

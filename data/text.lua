@@ -177,7 +177,7 @@ function conky_draw_text()
     		reflection_length=0,			
         },  
         {
-		    text=conky_parse('${memperc}').."%",
+		    text=conky_parse('${memperc}').."% RAM",
 		    x=223,
 		    y=101,
 		    v_align="t",
@@ -264,8 +264,35 @@ function conky_draw_text()
 				reflection_alpha=0,
 				reflection_length=0,
 				DrawMe=conky_parse("${if_mounted /home/user/MyDocs}1$endif")
+        },        
+        {
+		    text="DiskIO",
+		    x=520,
+		    y=101,
+		    v_align="t",
+		    font_name="Nokia Pure",
+		    font_size=18,
+		   	colour={{0,0xcc6600,1},{1,col0,1}},
+		   	bold=true,
+				orientation="ww",
+				reflection_alpha=0,
+				reflection_length=0,
         },
- --[[       {
+        {
+		    text="Charge Rate",
+		    x=720,
+		    y=101,
+		    v_align="t",
+		    font_name="Nokia Pure",
+		    font_size=18,
+		   	colour={{0,0xFF0000,1},{1,col0,1}},
+		   	bold=true,
+				orientation="ww",
+				reflection_alpha=0,
+				reflection_length=0,
+        },
+        
+ --[[   {
 		    text=conky_parse('${fs_used /media/mmc1} / ${fs_size /media/mmc1} (${fs_free /media/mmc1})'),
 		    x=5,
 		    y=175,

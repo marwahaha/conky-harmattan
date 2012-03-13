@@ -73,14 +73,13 @@ static void dumpBuffer(const void *buf, size_t bufSize)
 
 const char* bmeClientGetData(const char *bmeSocketPath, struct bme_reply *bmeReply)
 {
-  static int x = 0;
-  printf("%d\n", x); // outputs the value of x //always crashes on 23 or 24
-  x = x + 1;
+  //static int x = 0;
+  //printf("%d\n", x); // outputs the value of x //always crashes on 23 or 24
+  //x = x + 1;
     
   int s = socket(AF_LOCAL, SOCK_STREAM, 0);
   if (s <= 0)
     return "socket";
-  NORM_ERR("bme a");
   struct sockaddr_un name;
   name.sun_family = AF_LOCAL;
   strcpy(name.sun_path, bmeSocketPath);
@@ -89,29 +88,26 @@ const char* bmeClientGetData(const char *bmeSocketPath, struct bme_reply *bmeRep
 
   char foo[256];
   size_t rd;
-  NORM_ERR("bme b");
   // TODO: clean up this crap
   write(s, "SYNC\10\0\0\0BMentity", 16);
   rd = read(s, foo, sizeof(foo));
-  NORM_ERR("read %i bytes",rd); //reads 0 right before it crashes
+  //NORM_ERR("read %i bytes",rd); //reads 9 every time
   //fprintf(stderr, "rd=%zu\n", rd);
-  NORM_ERR("bme c");
   write(s, "SYNC\4\0\0\0\3\200\0\0\n", 12);//crashes here
-  NORM_ERR("bme c.5");
+ 
   rd = read(s, foo, 20);
-  NORM_ERR("bme d");
-  NORM_ERR("read %i bytes",rd); //reads 0 right before it crashes
+  //NORM_ERR("bme socket read %i bytes",rd); //reads -1 right before it crashes
   //fprintf(stderr, "rd=%zu\n", rd);
   rd = read(s, bmeReply, sizeof(*bmeReply));
   //fprintf(stderr, "rd=%zu\n", rd);
-  NORM_ERR("bme e");
+ 
   // FIXME: sometimes we get extra data in replies
-  NORM_ERR("read %i bytes",rd); //reads 0 right before it crashes
+  //NORM_ERR("read %i bytes",rd); //reads 0 right before it crashes
   if (rd > 128){
     memmove( bmeReply, ((char*) bmeReply) + rd - 128, 128);
   }
-  dumpBuffer(bmeReply, rd);
-
+ // dumpBuffer(bmeReply, rd);
+  close(s);
   return 0;
 }
 
@@ -131,9 +127,9 @@ struct bme_reply getBattInfoFromBME()
   struct bme_reply bmeReply;
   
   memset(&bmeReply, 0, sizeof bmeReply);
-  NORM_ERR("bme 1");
+  //NORM_ERR("bme 1");
   const char *failedOn = bmeClientGetData("/tmp/.bmesrv", &bmeReply);
-  NORM_ERR("bme 2");
+  //NORM_ERR("bme 2");
   if (failedOn) {
     NORM_ERR("bme_client_get_data failed on %s: %s\n", failedOn, strerror(errno));
     //try again

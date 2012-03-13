@@ -1920,12 +1920,10 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
 	idx = get_battery_idx(bat);
 
 	/* don't update battery too often */
-/*
 	if (current_update_time - last_battery_time[idx] < 2) {
 		set_return_value(buffer, n, item, idx);
 		return;
 	}
-*/
 
 	last_battery_time[idx] = current_update_time;
 
@@ -2006,11 +2004,9 @@ void get_battery_stuff(char *buffer, unsigned int n, const char *bat, int item)
  		 }
                 
                 struct bme_reply bmeInfo = getBattInfoFromBME();
-                NORM_ERR("at linux.c bme 3");
                 last_battery_temp[idx] = ((float)bmeInfo.battery_temperature) - 273.15f;
                 last_battery_rate[idx] = bmeInfo.battery_current;
- 		//last_battery_temp[idx] = temp;
-                NORM_ERR("at linux.c bme 4");
+ 		//last_battery_temp[idx] = temp;                
 	}
 	set_return_value(buffer, n, item, idx);
 }
