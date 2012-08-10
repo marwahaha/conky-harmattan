@@ -20,18 +20,6 @@
 #      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-if [ -r /etc/osso-af-init/af-defines.sh ]; then
-  source /etc/osso-af-init/af-defines.sh
-fi
-
-if [ -x /usr/bin/dbus-send -a -x /usr/bin/gtk-update-icon-cache ]; then
-  dbus-send --type=method_call --dest=org.freedesktop.Notifications /org/freedesktop/Notifications org.freedesktop.Notifications.SystemNoteInfoprint string:"Updating icon cache" || true
-fi
-
-if [ -x /usr/bin/gtk-update-icon-cache ]; then
-  gtk-update-icon-cache -f /usr/share/icons/hicolor || true
-fi
-
 case "$1" in
     configure)
         [ -z "$2" ] && \

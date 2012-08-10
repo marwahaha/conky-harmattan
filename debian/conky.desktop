@@ -2,6 +2,6 @@
 Version=1.0
 Encoding=UTF-8
 Name=Conky
-Icon=conky
+Icon=/usr/share/themes/base/meegotouch/icons/conky.png
 Exec=/usr/bin/conky.sh
 Type=Application

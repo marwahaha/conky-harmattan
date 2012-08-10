@@ -97,10 +97,8 @@ install: build
 	dh_clean -k 
 
 	cd build-all && $(MAKE) install DESTDIR=$(CURDIR)/debian/conky-n950
-	mkdir -p debian/conky-n950/usr/share/icons/hicolor/scalable/apps/
-	cp -p debian/conkylogo64.png debian/conky-n950/usr/share/icons/hicolor/scalable/apps/conky.png
-	mkdir -p debian/conky-n950/usr/share/icons/hicolor/48x48/apps/
-	cp -p debian/conkylogo48.png debian/conky-n950/usr/share/icons/hicolor/48x48/apps/conky.png
+	mkdir -p debian/conky-n950/usr/share/themes/base/meegotouch/icons/
+	cp -p debian/conkylogo80.png debian/conky-n950/usr/share/themes/base/meegotouch/icons/conky.png
 	mkdir -p debian/conky-n950/usr/share/applications/
 	cp -p debian/conky.desktop debian/conky-n950/usr/share/applications/conky.desktop
 	mkdir -p debian/conky-n950/usr/bin/
