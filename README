@@ -185,7 +185,7 @@ CONFIGURATION SETTINGS
        alignment
               Aligned position on screen, may be top_left, top_right, top_mid-
               dle, bottom_left, bottom_right, bottom_middle, middle_left, mid-
-              dle_middle, middle_right, or none (also can be abreviated as tl,
+              dle_middle, middle_right, or none (also can be abbreviated as tl,
               tr, tm, bl, br, bm, ml, mm, mr). See also gap_x and gap_y.
 
 
@@ -2231,7 +2231,7 @@ OBJECTS/VARIABLES
               all:
 
               using template               same without template
-              뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒뵒
+              혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬혬
               ${template0 node name}       $nodename
               ${template1 root /}          root:   ${fs_free   /}   /
                                            ${fs_size /}
@@ -2766,11 +2766,11 @@ BUGS
        and experiment.
 
 SEE ALSO
-       윩http://conky.sourceforge.net/윪
+       혺짢http://conky.sourceforge.net/혺짤
 
-       윩http://www.sourceforge.net/projects/conky윪
+       혺짢http://www.sourceforge.net/projects/conky혺짤
 
-       윩http://wiki.conky.be윪
+       혺짢http://wiki.conky.be혺짤
 
        #conky on irc.freenode.net
 
